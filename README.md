@@ -9,4 +9,4 @@ Kodi remote written in Qt and created as a learning exercise. At present this in
 
 ## Screenshots
 
-![Remote](https://github.com/annahowell/Qore2/blob/master/screenshots/remote.png)
+![Remote](screenshots/remote.png)
