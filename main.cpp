@@ -13,5 +13,8 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
+    Connection client(QUrl(QStringLiteral("ws://127.0.0.1:9090")), true);
+    //QObject::connect(&client, &Connection::closed, &a, &QCoreApplication::quit);
+
     return a.exec();
 }

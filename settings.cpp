@@ -259,5 +259,4 @@ void Settings::updateGui()
     fastForwardEdit->setText(s.value("fastforward").toString());
     nextEdit->setText(s.value("next").toString());
     showOsdEdit->setText(s.value("showosd").toString());
-
 }

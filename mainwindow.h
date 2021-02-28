@@ -6,10 +6,6 @@
 #include <QSettings>
 #include "remotecontrol.h"
 
-
-
-
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT

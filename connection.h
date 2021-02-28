@@ -2,9 +2,8 @@
 #define CONNECTION_H
 
 #include <QtNetwork>
+#include <QtWebSockets/QWebSocket>
 
-// Button codes, used to make program more readable, all
-// usages converted to int equivalents at compile time
 #define UP           0
 #define DOWN         1
 #define LEFT         2
@@ -22,23 +21,27 @@
 #define NEXT         14
 #define SHOW_OSD     15
 
+
 class Connection : public QObject
 {
     Q_OBJECT
-
 public:
-    Connection();
-    void constructRequest(int buttonCode);
+    explicit Connection(const QUrl &url, bool debug = false, QObject *parent = nullptr);
+    void send(QJsonDocument jsondoc);
+    ~Connection();
 
-public slots:
-    void onPostAnswer(QNetworkReply* reponse);
+Q_SIGNALS:
+    void closed();
+
+private Q_SLOTS:
+    void onConnected();
+    void onTextMessageReceived(QString message);
 
 private:
-    QUrl serviceUrl;
-    QNetworkAccessManager *networkManager;
-    QNetworkRequest networkRequest;
-    QNetworkReply *reply;
-    QSettings *s;
+    QWebSocket m_webSocket;
+    QUrl m_url;
+    QJsonDocument jsonDocument;
+    bool m_debug;
 };
 
 #endif // CONNECTION_H

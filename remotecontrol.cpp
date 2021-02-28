@@ -2,7 +2,7 @@
 
 RemoteControl::RemoteControl()
 {
-    connection = new Connection();
+    connection = new Connection(QUrl(QStringLiteral("ws://127.0.0.1:9090")), true);
 
     createWidgets();
     setShortcuts();
@@ -16,27 +16,27 @@ RemoteControl::RemoteControl()
 void RemoteControl::createWidgets()
 {
     // Create buttons
-    up = new QPushButton(style()->standardIcon(QStyle::SP_ArrowUp), "");
-    down = new QPushButton(style()->standardIcon(QStyle::SP_ArrowDown), "");
-    left = new QPushButton(style()->standardIcon(QStyle::SP_ArrowLeft), "");
-    right = new QPushButton(style()->standardIcon(QStyle::SP_ArrowRight), "");
-    enter = new QPushButton(style()->standardIcon(QStyle::SP_DialogApplyButton), "");
-    back = new QPushButton(style()->standardIcon(QStyle::SP_ArrowBack), "");
+    up          = new QPushButton(style()->standardIcon(QStyle::SP_ArrowUp), "");
+    down        = new QPushButton(style()->standardIcon(QStyle::SP_ArrowDown), "");
+    left        = new QPushButton(style()->standardIcon(QStyle::SP_ArrowLeft), "");
+    right       = new QPushButton(style()->standardIcon(QStyle::SP_ArrowRight), "");
+    enter       = new QPushButton(style()->standardIcon(QStyle::SP_DialogApplyButton), "");
+    back        = new QPushButton(style()->standardIcon(QStyle::SP_ArrowBack), "");
 
-    volumeUp = new QPushButton(style()->standardIcon(QStyle::SP_ArrowUp), "");
-    volumeLogo = new QPushButton(style()->standardIcon(QStyle::SP_MediaVolume), "");
-    volumeDown = new QPushButton(style()->standardIcon(QStyle::SP_ArrowDown), "");
+    volumeUp    = new QPushButton(style()->standardIcon(QStyle::SP_ArrowUp), "");
+    volumeLogo  = new QPushButton(style()->standardIcon(QStyle::SP_MediaVolume), "");
+    volumeDown  = new QPushButton(style()->standardIcon(QStyle::SP_ArrowDown), "");
 
-    stop = new QPushButton(style()->standardIcon(QStyle::SP_MediaStop), "");
-    pause = new QPushButton(style()->standardIcon(QStyle::SP_MediaPause), "");
-    play = new QPushButton(style()->standardIcon(QStyle::SP_MediaPlay), "");
-    previous = new QPushButton(style()->standardIcon(QStyle::SP_MediaSkipBackward), "");
-    rewind = new QPushButton(style()->standardIcon(QStyle::SP_MediaSeekBackward), "");
+    stop        = new QPushButton(style()->standardIcon(QStyle::SP_MediaStop), "");
+    pause       = new QPushButton(style()->standardIcon(QStyle::SP_MediaPause), "");
+    play        = new QPushButton(style()->standardIcon(QStyle::SP_MediaPlay), "");
+    previous    = new QPushButton(style()->standardIcon(QStyle::SP_MediaSkipBackward), "");
+    rewind      = new QPushButton(style()->standardIcon(QStyle::SP_MediaSeekBackward), "");
     fastForward = new QPushButton(style()->standardIcon(QStyle::SP_MediaSeekForward), "");
-    next = new QPushButton(style()->standardIcon(QStyle::SP_MediaSkipForward), "");
-    showOsd = new QPushButton(style()->standardIcon(QStyle::SP_FileDialogListView), "");
+    next        = new QPushButton(style()->standardIcon(QStyle::SP_MediaSkipForward), "");
+    showOsd     = new QPushButton(style()->standardIcon(QStyle::SP_FileDialogListView), "");
 
-    sendText = new QLineEdit("");
+    //sendText    = new QLineEdit("");
 
     // Create array so we can foreach through adding default values for every button
     remote_buttons << up << down << left << right << enter << back << volumeUp << \
@@ -65,46 +65,46 @@ void RemoteControl::createWidgets()
 void RemoteControl::setShortcuts()
 {
     // Set shortcut keys for each button based on what is defined in the settings file
-    up->setShortcut(QKeySequence(s.value("up").toString()));
-    down->setShortcut(QKeySequence(s.value("down").toString()));
-    left->setShortcut(QKeySequence(s.value("left").toString()));
-    right->setShortcut(QKeySequence(s.value("right").toString()));
-    enter->setShortcut(QKeySequence(s.value("enter").toString()));
-    back->setShortcut(QKeySequence(s.value("back").toString()));
+    up->setShortcut         (QKeySequence(Qt::Key_Up));
+    down->setShortcut       (QKeySequence(Qt::Key_Down));
+    left->setShortcut       (QKeySequence(Qt::Key_Left));
+    right->setShortcut      (QKeySequence(Qt::Key_Right));
+    enter->setShortcut      (QKeySequence(Qt::Key_Return));
+    back->setShortcut       (QKeySequence(Qt::Key_Backspace));
 
-    volumeUp->setShortcut(QKeySequence(s.value("volumeup").toString()));
-    volumeDown->setShortcut(QKeySequence(s.value("volumedown").toString()));
+    volumeUp->setShortcut   (QKeySequence(Qt::Key_BracketRight));
+    volumeDown->setShortcut (QKeySequence(Qt::Key_BracketLeft));
 
-    stop->setShortcut(QKeySequence(s.value("stop").toString()));
-    pause->setShortcut(QKeySequence(s.value("pause").toString()));
-    previous->setShortcut(QKeySequence(s.value("previous").toString()));
-    rewind->setShortcut(QKeySequence(s.value("rewind").toString()));
-    fastForward->setShortcut(QKeySequence(s.value("fastforward").toString()));
-    next->setShortcut(QKeySequence(s.value("next").toString()));
-    showOsd->setShortcut(QKeySequence(s.value("showosd").toString()));
+    stop->setShortcut       (QKeySequence(Qt::Key_X));
+    pause->setShortcut      (QKeySequence(Qt::Key_Space));
+    previous->setShortcut   (QKeySequence(Qt::Key_Plus));
+    rewind->setShortcut     (QKeySequence(Qt::Key_Less));
+    fastForward->setShortcut(QKeySequence(Qt::Key_Greater));
+    next->setShortcut       (QKeySequence(Qt::Key_Minus));
+    showOsd->setShortcut    (QKeySequence(Qt::Key_M));
 
     // Set signal mapping for the buttons, the VALUES are defined in connection.h
     // Navigation buttons
-    signalMapper->setMapping(up, UP);
-    signalMapper->setMapping(down, DOWN);
-    signalMapper->setMapping(left, LEFT);
-    signalMapper->setMapping(right, RIGHT);
-    signalMapper->setMapping(enter, ENTER);
-    signalMapper->setMapping(back, BACK);
+    signalMapper->setMapping(up,          UP);
+    signalMapper->setMapping(down,        DOWN);
+    signalMapper->setMapping(left,        LEFT);
+    signalMapper->setMapping(right,       RIGHT);
+    signalMapper->setMapping(enter,       ENTER);
+    signalMapper->setMapping(back,        BACK);
 
     //Volume buttons
-    signalMapper->setMapping(volumeUp, VOLUME_UP);
-    signalMapper->setMapping(volumeDown, VOLUME_DOWN);
+    signalMapper->setMapping(volumeUp,    VOLUME_UP);
+    signalMapper->setMapping(volumeDown,  VOLUME_DOWN);
 
     // Player buttons
-    signalMapper->setMapping(stop, STOP);
-    signalMapper->setMapping(pause, PAUSE);
-    signalMapper->setMapping(play, PLAY);
-    signalMapper->setMapping(previous, PREVIOUS);
-    signalMapper->setMapping(rewind, REWIND);
+    signalMapper->setMapping(stop,        STOP);
+    signalMapper->setMapping(pause,       PAUSE);
+    signalMapper->setMapping(play,        PLAY);
+    signalMapper->setMapping(previous,    PREVIOUS);
+    signalMapper->setMapping(rewind,      REWIND);
     signalMapper->setMapping(fastForward, FAST_FORWARD);
-    signalMapper->setMapping(next, NEXT);
-    signalMapper->setMapping(showOsd, SHOW_OSD);
+    signalMapper->setMapping(next,        NEXT);
+    signalMapper->setMapping(showOsd,     SHOW_OSD);
 
     connect (signalMapper, SIGNAL(mapped(int)), this, SLOT(handleButton(int))) ;
 }
@@ -151,8 +151,8 @@ void RemoteControl::setUpLayout()
     // Create grid for text sender and add widgets
     QGridLayout *textGrid = new QGridLayout();
     textGrid->setContentsMargins(0, 32, 0, 0);
-    textGrid->addWidget(sendText, 0, 0);
-    grid->addLayout(textGrid, 5, 0, 1, 4);
+    //textGrid->addWidget(sendText, 0, 0);
+    //grid->addLayout(textGrid, 5, 0, 1, 4);
 
     setLayout(grid);
 }
@@ -163,5 +163,106 @@ void RemoteControl::setUpLayout()
 
 void RemoteControl::handleButton(int buttonCode)
 {
-    connection->constructRequest(buttonCode);
+    QJsonObject action;
+    QJsonObject json
+    {
+        {"jsonrpc", "2.0"},
+        {"id", "1"}
+    };
+
+    switch (buttonCode) {
+
+    case UP:
+        json.insert("method", "Input.Up");
+        break;
+
+    case DOWN:
+        json.insert("method", "Input.Down");
+        break;
+
+    case LEFT:
+        json.insert("method", "Input.Left");
+        break;
+
+    case RIGHT:
+        json.insert("method", "Input.Right");
+        break;
+
+    case ENTER:
+        json.insert("method", "Input.Select");
+        break;
+
+    case BACK:
+        json.insert("method", "Input.Back");
+        break;
+
+    case VOLUME_DOWN:
+        json.insert("method", "Input.ExecuteAction");
+        action.insert("action", "volumedown");
+        json.insert("params", action);
+        break;
+
+    case VOLUME_UP:
+        json.insert("method", "Input.ExecuteAction");
+        action.insert("action", "volumeup");
+        json.insert("params", action);
+        break;
+
+    case STOP:
+        json.insert("method", "Input.ExecuteAction");
+        action.insert("action", "stop");
+        json.insert("params", action);
+        break;
+
+    case PAUSE:
+        json.insert("method", "Input.ExecuteAction");
+        action.insert("action", "pause");
+        json.insert("params", action);
+        break;
+
+    case PLAY:
+        json.insert("method", "Input.ExecuteAction");
+        action.insert("action", "play");
+        json.insert("params", action);
+        break;
+
+    case PREVIOUS:
+        json.insert("method", "Input.ExecuteAction");
+        action.insert("action", "skipprevious");
+        json.insert("params", action);
+        break;
+
+    case REWIND:
+        json.insert("method", "Input.ExecuteAction");
+        action.insert("action", "stepback");
+        json.insert("params", action);
+        break;
+
+    case FAST_FORWARD:
+        json.insert("method", "Input.ExecuteAction");
+        action.insert("action", "stepforward");
+        json.insert("params", action);
+        break;
+
+    case NEXT:
+        json.insert("method", "Input.ExecuteAction");
+        action.insert("action", "skipnext");
+        json.insert("params", action);
+        break;
+
+    case SHOW_OSD:
+        json.insert("method", "Input.ShowOSD");
+        break;
+
+    default:
+        json.insert("method", "Input.noop");
+        break;
+    }
+
+    //QObject::connect(connection, &Connection::closed, this, &QCoreApplication::quit);
+
+    connection->send(QJsonDocument(json));
+    //connection->send(QString("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"Input.Up\"}"));
+
+    //connection->constructRequest(buttonCode);
 }

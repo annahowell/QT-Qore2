@@ -10,13 +10,12 @@ class Settings : public QWidget
 public:
     Settings();
 
-
 private:
     QGridLayout *grid;
-    QLabel *ipLabel, *portLabel, *usernameLabel, *passwordLabel, *upLabel,
-           *downLabel, *leftLabel, *rightLabel, *enterLabel, *backLabel, \
+    QLabel *ipLabel,         *portLabel, *usernameLabel, *passwordLabel, *upLabel,
+           *downLabel,       *leftLabel, *rightLabel, *enterLabel, *backLabel, \
            *volumeDownLabel, *volumeUpLabel, *stopLabel, *pauseLabel, \
-           *previousLabel, *rewindLabel, *fastForwardLabel, *nextLabel, *showOsdLabel;
+           *previousLabel,   *rewindLabel, *fastForwardLabel, *nextLabel, *showOsdLabel;
 
     QLineEdit *ipEdit, *portEdit, *usernameEdit, *passwordEdit, *upEdit, \
               *downEdit, *leftEdit, *rightEdit, *enterEdit, *backEdit, \

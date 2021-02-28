@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     QTabWidget *tabs = new QTabWidget(this);
 
     tabs->setFixedSize(400, 450);
-    tabs->addTab(rc,"Remote Control");
+    tabs->addTab(rc,"Remote");
     tabs->addTab(new Settings(),"Settings");
 
     connect(tabs,  &QTabWidget::tabBarClicked, this, [this]{ rc->setShortcuts();  });

@@ -1,142 +1,48 @@
 #include "connection.h"
 
-Connection::Connection()
+Connection::Connection(const QUrl &url, bool debug, QObject *parent) :
+    QObject(parent),
+    m_url(url),
+    m_debug(debug)
 {
-    // Setup the webservice url
-    serviceUrl.setUrl("http://kodi:kodi@192.168.1.200:8080/jsonrpc");
-
-    // Call the webservice
-    networkManager = new QNetworkAccessManager(this);
-
-    // Send the network request
-    networkRequest.setUrl(serviceUrl);
-    networkRequest.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
+    if (true)
+        qDebug() << "WebSocket server:" << url;
+    connect(&m_webSocket, &QWebSocket::connected, this, &Connection::onConnected);
+    connect(&m_webSocket, &QWebSocket::disconnected, this, &Connection::closed);
 }
 
-
-// -------------------------------------------------------------------------
-
-
-void Connection::constructRequest(int buttonCode)
+void Connection::send(QJsonDocument jsondoc)
 {
-    QJsonObject action;
-    QJsonObject json
-    {
-        {"jsonrpc", "2.0"},
-        {"id", "1"}
-    };
+    jsonDocument = jsondoc;
 
-    switch (buttonCode) {
-
-    case UP:
-        json.insert("method", "Input.Up");
-        break;
-
-    case DOWN:
-        json.insert("method", "Input.Down");
-        break;
-
-    case LEFT:
-        json.insert("method", "Input.Left");
-        break;
-
-    case RIGHT:
-        json.insert("method", "Input.Right");
-        break;
-
-    case ENTER:
-        json.insert("method", "Input.Select");
-        break;
-
-    case BACK:
-        json.insert("method", "Input.Back");
-        break;
-
-    case VOLUME_DOWN:
-        json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "volumedown");
-        json.insert("params", action);
-        break;
-
-    case VOLUME_UP:
-        json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "volumeup");
-        json.insert("params", action);
-        break;
-
-    case STOP:
-        json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "stop");
-        json.insert("params", action);
-        break;
-
-    case PAUSE:
-        json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "pause");
-        json.insert("params", action);
-        break;
-
-    case PLAY:
-        json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "play");
-        json.insert("params", action);
-        break;
-
-    case PREVIOUS:
-        json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "skipprevious");
-        json.insert("params", action);
-        break;
-
-    case REWIND:
-        json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "stepback");
-        json.insert("params", action);
-        break;
-
-    case FAST_FORWARD:
-        json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "stepforward");
-        json.insert("params", action);
-        break;
-
-    case NEXT:
-        json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "skipnext");
-        json.insert("params", action);
-        break;
-
-    case SHOW_OSD:
-        json.insert("method", "Input.ShowOSD");
-        break;
-
-    default:
-        json.insert("method", "Input.noop");
-        break;
-    }
-
-    reply = networkManager->post(networkRequest, QJsonDocument(json).toJson());
-
-    while(!reply->isFinished())
-    {
-        qApp->processEvents();
-    }
-
-    QByteArray response_data = reply->readAll();
-    QJsonDocument json_response = QJsonDocument::fromJson(response_data);
-    qDebug() << "Received: " << json_response;
+    m_webSocket.open(QUrl(m_url));
 }
 
+void Connection::onConnected()
+{
+    if (m_debug) {
+        qDebug() << "WebSocket connected";
+    }
 
-// -------------------------------------------------------------------------
+    connect(&m_webSocket, &QWebSocket::textFrameReceived, this, &Connection::onTextMessageReceived);
 
 
-void Connection::onPostAnswer(QNetworkReply* resp)
- {
-    QVariant status_code = resp->attribute(QNetworkRequest::HttpStatusCodeAttribute);
-    //status_code.is_valid(){
-        // Print or catch the status code
-        QString status = status_code.toString(); // or status_code.toInt();
-        qDebug() << status;
-    //}
- }
+    m_webSocket.sendTextMessage(jsonDocument.toJson());
+}
+
+void Connection::onTextMessageReceived(QString message)
+{
+    if (m_debug) {
+        qDebug() << "Message received:" << message;
+    }
+
+}
+
+Connection::~Connection()
+{
+    if (m_debug) {
+        qDebug() << "Closing connection";
+    }
+
+    m_webSocket.close();
+}

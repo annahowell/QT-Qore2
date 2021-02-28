@@ -25,7 +25,7 @@ private:
                 *previous, *rewind, *fastForward, *next, *showOsd;
     QSignalMapper* signalMapper;
     QLineEdit *sendText;
-    QSettings s;
+    QSettings settings;
 
     void createWidgets();
     void setUpLayout();
