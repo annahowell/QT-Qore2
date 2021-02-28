@@ -12,15 +12,9 @@ public:
 
 private:
     QGridLayout *grid;
-    QLabel *ipLabel,         *portLabel, *usernameLabel, *passwordLabel, *upLabel,
-           *downLabel,       *leftLabel, *rightLabel, *enterLabel, *backLabel, \
-           *volumeDownLabel, *volumeUpLabel, *stopLabel, *pauseLabel, \
-           *previousLabel,   *rewindLabel, *fastForwardLabel, *nextLabel, *showOsdLabel;
+    QLabel *ipLabel, *portLabel;
 
-    QLineEdit *ipEdit, *portEdit, *usernameEdit, *passwordEdit, *upEdit, \
-              *downEdit, *leftEdit, *rightEdit, *enterEdit, *backEdit, \
-              *volumeDownEdit, *volumeUpEdit, *stopEdit, *pauseEdit, *previousEdit, \
-              *rewindEdit, *fastForwardEdit, *nextEdit, *showOsdEdit;
+    QLineEdit *ipEdit, *portEdit;
     QSettings s;
     QPushButton *saveButton, *resetButton;
 

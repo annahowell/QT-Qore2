@@ -21,41 +21,48 @@ void RemoteControl::createWidgets()
     left        = new QPushButton(style()->standardIcon(QStyle::SP_ArrowLeft), "");
     right       = new QPushButton(style()->standardIcon(QStyle::SP_ArrowRight), "");
     enter       = new QPushButton(style()->standardIcon(QStyle::SP_DialogApplyButton), "");
-    back        = new QPushButton(style()->standardIcon(QStyle::SP_ArrowBack), "");
 
     volumeUp    = new QPushButton(style()->standardIcon(QStyle::SP_ArrowUp), "");
     volumeLogo  = new QPushButton(style()->standardIcon(QStyle::SP_MediaVolume), "");
     volumeDown  = new QPushButton(style()->standardIcon(QStyle::SP_ArrowDown), "");
 
-    stop        = new QPushButton(style()->standardIcon(QStyle::SP_MediaStop), "");
-    pause       = new QPushButton(style()->standardIcon(QStyle::SP_MediaPause), "");
-    play        = new QPushButton(style()->standardIcon(QStyle::SP_MediaPlay), "");
+    home        = new QPushButton("Home");
     previous    = new QPushButton(style()->standardIcon(QStyle::SP_MediaSkipBackward), "");
-    rewind      = new QPushButton(style()->standardIcon(QStyle::SP_MediaSeekBackward), "");
-    fastForward = new QPushButton(style()->standardIcon(QStyle::SP_MediaSeekForward), "");
+    stop        = new QPushButton(style()->standardIcon(QStyle::SP_MediaStop), "");
+    playPause   = new QPushButton(style()->standardIcon(QStyle::SP_MediaPlay), "");
     next        = new QPushButton(style()->standardIcon(QStyle::SP_MediaSkipForward), "");
-    showOsd     = new QPushButton(style()->standardIcon(QStyle::SP_FileDialogListView), "");
+
+    info        = new QPushButton("Info");
+    menu        = new QPushButton("Menu");
+    back        = new QPushButton("Back");
+
 
     //sendText    = new QLineEdit("");
 
     // Create array so we can foreach through adding default values for every button
-    remote_buttons << up << down << left << right << enter << back << volumeUp << \
-                      volumeLogo << volumeDown << stop << pause << play << previous << \
-                      rewind << fastForward << next << showOsd;
+    buttons << up       << down       << left       << right << enter \
+            << volumeUp << volumeLogo << volumeDown                   \
+            << previous << stop       << playPause  << next           \
+            << home     << info       << menu       << back;
 
     signalMapper = new QSignalMapper(this);
 
-    for(auto& button : remote_buttons)
+    for(auto& button : buttons)
     {
+      button->setFixedSize(QSize(40, 40));
       button->setFlat(false);
-      button->setIconSize(QSize(52,52));
+      button->setIconSize(QSize(20,20));
       connect (button, SIGNAL(clicked()), signalMapper, SLOT(map())) ;
-
     }
+
+    // Now set the non-square buttons
+    home->setFixedSize(80, 40);
+    info->setFixedSize(66, 40);
+    menu->setFixedSize(80, 40);
+    back->setFixedSize(80, 40);
 
     // Volume logo is actually a hacky disabled button
     volumeLogo->setEnabled(false);
-
 }
 
 
@@ -70,41 +77,39 @@ void RemoteControl::setShortcuts()
     left->setShortcut       (QKeySequence(Qt::Key_Left));
     right->setShortcut      (QKeySequence(Qt::Key_Right));
     enter->setShortcut      (QKeySequence(Qt::Key_Return));
-    back->setShortcut       (QKeySequence(Qt::Key_Backspace));
 
     volumeUp->setShortcut   (QKeySequence(Qt::Key_BracketRight));
     volumeDown->setShortcut (QKeySequence(Qt::Key_BracketLeft));
 
-    stop->setShortcut       (QKeySequence(Qt::Key_X));
-    pause->setShortcut      (QKeySequence(Qt::Key_Space));
+    home->setShortcut       (QKeySequence(Qt::Key_M));
     previous->setShortcut   (QKeySequence(Qt::Key_Plus));
-    rewind->setShortcut     (QKeySequence(Qt::Key_Less));
-    fastForward->setShortcut(QKeySequence(Qt::Key_Greater));
+    stop->setShortcut       (QKeySequence(Qt::Key_X));
+    playPause->setShortcut  (QKeySequence(Qt::Key_Space));
     next->setShortcut       (QKeySequence(Qt::Key_Minus));
-    showOsd->setShortcut    (QKeySequence(Qt::Key_M));
 
-    // Set signal mapping for the buttons, the VALUES are defined in connection.h
-    // Navigation buttons
-    signalMapper->setMapping(up,          UP);
-    signalMapper->setMapping(down,        DOWN);
-    signalMapper->setMapping(left,        LEFT);
-    signalMapper->setMapping(right,       RIGHT);
-    signalMapper->setMapping(enter,       ENTER);
-    signalMapper->setMapping(back,        BACK);
+    info->setShortcut       (QKeySequence(Qt::Key_N));
+    menu->setShortcut       (QKeySequence(Qt::Key_R));
+    back->setShortcut       (QKeySequence(Qt::Key_Backspace));
 
-    //Volume buttons
-    signalMapper->setMapping(volumeUp,    VOLUME_UP);
-    signalMapper->setMapping(volumeDown,  VOLUME_DOWN);
+    // Set signal mapping for the buttons, the VALUES are defined in remotecontrol.h
+    signalMapper->setMapping(up,         UP);
+    signalMapper->setMapping(down,       DOWN);
+    signalMapper->setMapping(left,       LEFT);
+    signalMapper->setMapping(right,      RIGHT);
+    signalMapper->setMapping(enter,      ENTER);
 
-    // Player buttons
-    signalMapper->setMapping(stop,        STOP);
-    signalMapper->setMapping(pause,       PAUSE);
-    signalMapper->setMapping(play,        PLAY);
-    signalMapper->setMapping(previous,    PREVIOUS);
-    signalMapper->setMapping(rewind,      REWIND);
-    signalMapper->setMapping(fastForward, FAST_FORWARD);
-    signalMapper->setMapping(next,        NEXT);
-    signalMapper->setMapping(showOsd,     SHOW_OSD);
+    signalMapper->setMapping(volumeUp,   VOLUME_UP);
+    signalMapper->setMapping(volumeDown, VOLUME_DOWN);
+
+    signalMapper->setMapping(home,       HOME);
+    signalMapper->setMapping(previous,   PREVIOUS);
+    signalMapper->setMapping(stop,       STOP);
+    signalMapper->setMapping(playPause,  PLAY_PAUSE);
+    signalMapper->setMapping(next,       NEXT);
+
+    signalMapper->setMapping(info,       INFO);
+    signalMapper->setMapping(menu,       MENU);
+    signalMapper->setMapping(back,       BACK);
 
     connect (signalMapper, SIGNAL(mapped(int)), this, SLOT(handleButton(int))) ;
 }
@@ -115,46 +120,76 @@ void RemoteControl::setShortcuts()
 
 void RemoteControl::setUpLayout()
 {
-    // Create window, relevant grids and add buttons etc
-    QGridLayout *grid = new QGridLayout;
 
-    // Add navigation buttons to window
-    grid->addWidget(up, 0, 1);
-    grid->addWidget(down, 2, 1);
-    grid->addWidget(left, 1, 0);
-    grid->addWidget(right, 1, 2);
-    grid->addWidget(enter, 1, 1);
-    grid->addWidget(back, 2, 0);
+    // Create container grid to hold the playerGrid, controlGrid and volumeGrid
+    QGridLayout *containerGrid = new QGridLayout;
+    containerGrid->setSpacing(5);
+    containerGrid->setContentsMargins(8, 8, 8, 8);
 
-    // Add volume buttons to window
-    grid->addWidget(volumeUp, 0, 4);
-    grid->addWidget(volumeLogo, 1, 4);
-    grid->addWidget(volumeDown, 2, 4);
+    // Create grid for player buttons and add widgets
+    QGridLayout *playerMenusContainerGrid = new QGridLayout();
+    playerMenusContainerGrid->setSpacing(5);
 
     // Create grid for player buttons and add widgets
     QGridLayout *playerGrid = new QGridLayout();
-    playerGrid->setContentsMargins(0, 40, 0, 0);
+    playerGrid->setSpacing(5);
 
-    grid->addLayout(playerGrid, 3, 0, 1, 5);
+    playerGrid->addWidget(home,      0, 0);
+    playerGrid->addWidget(previous,  0, 1);
+    playerGrid->addWidget(stop,      0, 2);
+    playerGrid->addWidget(playPause, 0, 3);
+    playerGrid->addWidget(next,      0, 4);
 
-    playerGrid->addWidget(stop, 3, 1);
-    playerGrid->addWidget(pause, 3, 2);
-    playerGrid->addWidget(play, 3, 3);
+    // Create grid for player buttons and add widgets
+    QGridLayout *menuGrid = new QGridLayout();
+    menuGrid->setSpacing(5);
 
-    playerGrid->addWidget(previous, 4, 0);
-    playerGrid->addWidget(rewind, 4, 1);
-    playerGrid->addWidget(fastForward, 4, 2);
-    playerGrid->addWidget(next, 4, 3);
-    playerGrid->addWidget(showOsd, 4, 4);
+    menuGrid->addWidget(info,      0, 1);
+    menuGrid->addWidget(menu,      0, 2);
+    menuGrid->addWidget(back,      0, 3);
+
+    playerMenusContainerGrid->addLayout(playerGrid, 1, 0, 2, 1);
+    playerMenusContainerGrid->addLayout(menuGrid, 2, 0, 1, 1);
+
+    containerGrid->addLayout(playerMenusContainerGrid, 0, 0, 1, 1);
+
+
+    // Add navigation buttons to window
+    QGridLayout *controlGrid = new QGridLayout;
+    //controlGrid->setSpacing(5);
+    controlGrid->setContentsMargins(24, 0, 0, 0);
+
+    controlGrid->addWidget(up,         0, 1);
+    controlGrid->addWidget(down,       2, 1);
+    controlGrid->addWidget(left,       1, 0);
+    controlGrid->addWidget(right,      1, 2);
+    controlGrid->addWidget(enter,      1, 1);
+
+    containerGrid->addLayout(controlGrid, 0, 1, 1, 1);
+
+
+    // Add volume buttons to window
+    QGridLayout *volumeGrid = new QGridLayout;
+    volumeGrid->setSpacing(5);
+    volumeGrid->setContentsMargins(24, 0, 0, 0);
+
+    volumeGrid->addWidget(volumeUp,   0, 4);
+    volumeGrid->addWidget(volumeLogo, 1, 4);
+    volumeGrid->addWidget(volumeDown, 2, 4);
+
+    containerGrid->addLayout(volumeGrid, 0, 2, 1, 1);
+
+
+
 
 
     // Create grid for text sender and add widgets
-    QGridLayout *textGrid = new QGridLayout();
-    textGrid->setContentsMargins(0, 32, 0, 0);
+    //QGridLayout *textGrid = new QGridLayout();
+    //textGrid->setContentsMargins(0, 32, 0, 0);
     //textGrid->addWidget(sendText, 0, 0);
     //grid->addLayout(textGrid, 5, 0, 1, 4);
 
-    setLayout(grid);
+    setLayout(containerGrid);
 }
 
 
@@ -192,10 +227,6 @@ void RemoteControl::handleButton(int buttonCode)
         json.insert("method", "Input.Select");
         break;
 
-    case BACK:
-        json.insert("method", "Input.Back");
-        break;
-
     case VOLUME_DOWN:
         json.insert("method", "Input.ExecuteAction");
         action.insert("action", "volumedown");
@@ -208,39 +239,21 @@ void RemoteControl::handleButton(int buttonCode)
         json.insert("params", action);
         break;
 
-    case STOP:
-        json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "stop");
-        json.insert("params", action);
-        break;
-
-    case PAUSE:
-        json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "pause");
-        json.insert("params", action);
-        break;
-
-    case PLAY:
-        json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "play");
-        json.insert("params", action);
-        break;
-
     case PREVIOUS:
         json.insert("method", "Input.ExecuteAction");
         action.insert("action", "skipprevious");
         json.insert("params", action);
         break;
 
-    case REWIND:
+    case STOP:
         json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "stepback");
+        action.insert("action", "stop");
         json.insert("params", action);
         break;
 
-    case FAST_FORWARD:
+    case PLAY_PAUSE:
         json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "stepforward");
+        action.insert("action", "pause");
         json.insert("params", action);
         break;
 
@@ -250,8 +263,8 @@ void RemoteControl::handleButton(int buttonCode)
         json.insert("params", action);
         break;
 
-    case SHOW_OSD:
-        json.insert("method", "Input.ShowOSD");
+    case BACK:
+        json.insert("method", "Input.Back");
         break;
 
     default:

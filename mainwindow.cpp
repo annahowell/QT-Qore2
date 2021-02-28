@@ -7,14 +7,14 @@ MainWindow::MainWindow(QWidget *parent)
     rc = new RemoteControl();
     QTabWidget *tabs = new QTabWidget(this);
 
-    tabs->setFixedSize(400, 450);
+    tabs->setFixedSize(450, 160);
     tabs->addTab(rc,"Remote");
     tabs->addTab(new Settings(),"Settings");
 
     connect(tabs,  &QTabWidget::tabBarClicked, this, [this]{ rc->setShortcuts();  });
 
     setWindowTitle(QString::fromUtf8("Kodi Remote"));
-    resize(400, 450);
+    setFixedSize(450, 160);
     show();
 }
 
