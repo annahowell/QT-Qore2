@@ -2,7 +2,7 @@
 
 RemoteControl::RemoteControl()
 {
-    connection = new Connection(QUrl(QStringLiteral("ws://127.0.0.1:9090")), true);
+    connection = new Connection(QUrl(QStringLiteral("ws://192.168.9.201:9090")), true);
 
     createWidgets();
     setShortcuts();
@@ -16,15 +16,15 @@ RemoteControl::RemoteControl()
 void RemoteControl::createWidgets()
 {
     // Create buttons
-    up          = new QPushButton(style()->standardIcon(QStyle::SP_ArrowUp), "");
-    down        = new QPushButton(style()->standardIcon(QStyle::SP_ArrowDown), "");
-    left        = new QPushButton(style()->standardIcon(QStyle::SP_ArrowLeft), "");
-    right       = new QPushButton(style()->standardIcon(QStyle::SP_ArrowRight), "");
-    enter       = new QPushButton(style()->standardIcon(QStyle::SP_DialogApplyButton), "");
+    up          = new QPushButton("↑");
+    down        = new QPushButton("↓");
+    left        = new QPushButton("←");
+    right       = new QPushButton("→");
+    enter       = new QPushButton(" ");
 
-    volumeUp    = new QPushButton(style()->standardIcon(QStyle::SP_ArrowUp), "");
+    volumeUp    = new QPushButton("+");
     volumeLogo  = new QPushButton(style()->standardIcon(QStyle::SP_MediaVolume), "");
-    volumeDown  = new QPushButton(style()->standardIcon(QStyle::SP_ArrowDown), "");
+    volumeDown  = new QPushButton("-");
 
     home        = new QPushButton("Home");
     previous    = new QPushButton(style()->standardIcon(QStyle::SP_MediaSkipBackward), "");
@@ -49,17 +49,18 @@ void RemoteControl::createWidgets()
 
     for(auto& button : buttons)
     {
-      button->setFixedSize(QSize(40, 40));
+      //button->setStyleSheet("background-color: red");
+      button->setFixedSize(QSize(42, 40));
       button->setFlat(false);
       button->setIconSize(QSize(20,20));
       connect (button, SIGNAL(clicked()), signalMapper, SLOT(map())) ;
     }
 
     // Now set the non-square buttons
-    home->setFixedSize(80, 40);
-    info->setFixedSize(66, 40);
-    menu->setFixedSize(80, 40);
-    back->setFixedSize(80, 40);
+    home->setFixedSize(QSize(80, 40));
+    info->setFixedSize(QSize(70, 40));
+    menu->setFixedSize(QSize(82, 40));
+    back->setFixedSize(QSize(82, 40));
 
     // Volume logo is actually a hacky disabled button
     volumeLogo->setEnabled(false);
@@ -120,74 +121,43 @@ void RemoteControl::setShortcuts()
 
 void RemoteControl::setUpLayout()
 {
+    QGridLayout *containerGrid  = new QGridLayout();
+    QGridLayout *playerGrid     = new QGridLayout();
+    QGridLayout *menuGrid       = new QGridLayout();
 
-    // Create container grid to hold the playerGrid, controlGrid and volumeGrid
-    QGridLayout *containerGrid = new QGridLayout;
     containerGrid->setSpacing(5);
-    containerGrid->setContentsMargins(8, 8, 8, 8);
-
-    // Create grid for player buttons and add widgets
-    QGridLayout *playerMenusContainerGrid = new QGridLayout();
-    playerMenusContainerGrid->setSpacing(5);
-
-    // Create grid for player buttons and add widgets
-    QGridLayout *playerGrid = new QGridLayout();
     playerGrid->setSpacing(5);
-
-    playerGrid->addWidget(home,      0, 0);
-    playerGrid->addWidget(previous,  0, 1);
-    playerGrid->addWidget(stop,      0, 2);
-    playerGrid->addWidget(playPause, 0, 3);
-    playerGrid->addWidget(next,      0, 4);
-
-    // Create grid for player buttons and add widgets
-    QGridLayout *menuGrid = new QGridLayout();
     menuGrid->setSpacing(5);
 
-    menuGrid->addWidget(info,      0, 1);
-    menuGrid->addWidget(menu,      0, 2);
-    menuGrid->addWidget(back,      0, 3);
+    containerGrid->setColumnMinimumWidth (1, 40);
+    containerGrid->setColumnMinimumWidth (5, 40);
 
-    playerMenusContainerGrid->addLayout(playerGrid, 1, 0, 2, 1);
-    playerMenusContainerGrid->addLayout(menuGrid, 2, 0, 1, 1);
+    containerGrid->setContentsMargins(8, 8, 8, 8);
+    playerGrid->setContentsMargins   (0, 0, 0, 0);
+    menuGrid->setContentsMargins     (0, 0, 0, 0);
 
-    containerGrid->addLayout(playerMenusContainerGrid, 0, 0, 1, 1);
+    playerGrid->addWidget(home,          0, 0, Qt::AlignCenter);
+    playerGrid->addWidget(previous,      0, 1, Qt::AlignCenter);
+    playerGrid->addWidget(stop,          0, 2, Qt::AlignCenter);
+    playerGrid->addWidget(playPause,     0, 3, Qt::AlignCenter);
+    playerGrid->addWidget(next,          0, 4, Qt::AlignCenter);
 
+    menuGrid->addWidget(info,            0, 1, Qt::AlignCenter);
+    menuGrid->addWidget(menu,            0, 2, Qt::AlignCenter);
+    menuGrid->addWidget(back,            0, 3, Qt::AlignCenter);
 
-    // Add navigation buttons to window
-    QGridLayout *controlGrid = new QGridLayout;
-    //controlGrid->setSpacing(5);
-    controlGrid->setContentsMargins(24, 0, 0, 0);
+    containerGrid->addWidget(up,         0, 3, Qt::AlignCenter);
+    containerGrid->addWidget(down,       2, 3, Qt::AlignCenter);
+    containerGrid->addWidget(left,       1, 2, Qt::AlignCenter);
+    containerGrid->addWidget(right,      1, 4, Qt::AlignCenter);
+    containerGrid->addWidget(enter,      1, 3, Qt::AlignCenter);
 
-    controlGrid->addWidget(up,         0, 1);
-    controlGrid->addWidget(down,       2, 1);
-    controlGrid->addWidget(left,       1, 0);
-    controlGrid->addWidget(right,      1, 2);
-    controlGrid->addWidget(enter,      1, 1);
+    containerGrid->addWidget(volumeUp,   0, 6, Qt::AlignCenter);
+    containerGrid->addWidget(volumeLogo, 1, 6, Qt::AlignCenter);
+    containerGrid->addWidget(volumeDown, 2, 6, Qt::AlignCenter);
 
-    containerGrid->addLayout(controlGrid, 0, 1, 1, 1);
-
-
-    // Add volume buttons to window
-    QGridLayout *volumeGrid = new QGridLayout;
-    volumeGrid->setSpacing(5);
-    volumeGrid->setContentsMargins(24, 0, 0, 0);
-
-    volumeGrid->addWidget(volumeUp,   0, 4);
-    volumeGrid->addWidget(volumeLogo, 1, 4);
-    volumeGrid->addWidget(volumeDown, 2, 4);
-
-    containerGrid->addLayout(volumeGrid, 0, 2, 1, 1);
-
-
-
-
-
-    // Create grid for text sender and add widgets
-    //QGridLayout *textGrid = new QGridLayout();
-    //textGrid->setContentsMargins(0, 32, 0, 0);
-    //textGrid->addWidget(sendText, 0, 0);
-    //grid->addLayout(textGrid, 5, 0, 1, 4);
+    containerGrid->addLayout(playerGrid,  0, 0, 1, 1); // rowNo, colNo, rowSpan, colSpan
+    containerGrid->addLayout(menuGrid,    1, 0, 1, 1);
 
     setLayout(containerGrid);
 }
