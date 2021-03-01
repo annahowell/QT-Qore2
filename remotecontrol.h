@@ -4,21 +4,24 @@
 #include <QtWidgets>
 #include "connection.h"
 
-#define UP           0
-#define DOWN         1
-#define LEFT         2
-#define RIGHT        3
-#define ENTER        4
-#define VOLUME_UP    5
-#define VOLUME_DOWN  6
-#define PREVIOUS     7
-#define STOP         8
-#define PLAY_PAUSE   9
-#define NEXT         10
-#define HOME         11
-#define INFO         12
-#define MENU         13
-#define BACK         14
+#define PREVIOUS     1
+#define REWIND       2
+#define STOP         3
+#define PLAY_PAUSE   4
+#define FAST_FORWARD 5
+#define NEXT         6
+#define MENU         7
+#define CONTEXT      8
+#define INFO         9
+#define BACK         10
+#define UP           11
+#define DOWN         12
+#define LEFT         13
+#define RIGHT        14
+#define ENTER        15
+#define VOLUME_UP    16
+#define VOLUME_DOWN  17
+
 
 class RemoteControl : public QWidget
 {
@@ -32,12 +35,13 @@ private:
     QGridLayout *grid;
     Connection *connection;
     QList<QPushButton*> buttons;
-    QPushButton *up,       *down,       *left,       *right, *enter, \
-                *volumeUp, *volumeLogo, *volumeDown,                 \
-                *previous, *stop,       *playPause,  *next,          \
-                *home,     *info,       *menu,       *back;
+    QPushButton *previous, *rewind,   *stop,       *playPause, *fastForward, *next,
+                *menu,     *context,  *info,       *back,
+                *up,       *down,     *left,       *right,
+                *enter,    *volumeUp, *volumeLogo, *volumeDown;
+
+
     QSignalMapper* signalMapper;
-    QLineEdit *sendText;
     QSettings settings;
 
     void createWidgets();
@@ -46,7 +50,5 @@ private:
 private slots:
     void handleButton(int buttonCode);
 };
-
-
 
 #endif // REMOTECONTROL_H

@@ -20,7 +20,6 @@ private:
 
     void setDefaults(bool doReset);
     void createWidgets();
-    void customiseWidgets();
     void setUpLayout();
     void saveSettings();
     void resetSettings();
