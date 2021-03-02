@@ -109,19 +109,22 @@ void RemoteControl::setUpLayout()
     containerGrid->setColumnMinimumWidth (6,  10);
     containerGrid->setColumnMinimumWidth (10, 20);
 
-    containerGrid->setMargin(4);
+    containerGrid->setHorizontalSpacing(4);
+    containerGrid->setVerticalSpacing(8);
 
-    containerGrid->addWidget(menu,        1, 1, Qt::AlignCenter);
-    containerGrid->addWidget(context,     1, 2, Qt::AlignCenter);
-    containerGrid->addWidget(info,        1, 3, Qt::AlignCenter);
-    containerGrid->addWidget(back,        1, 4, Qt::AlignCenter);
+    containerGrid->setMargin(8);
 
-    containerGrid->addWidget(previous,    2, 0, Qt::AlignBottom);
-    containerGrid->addWidget(rewind,      2, 1, Qt::AlignBottom);
-    containerGrid->addWidget(stop,        2, 2, Qt::AlignBottom);
-    containerGrid->addWidget(playPause,   2, 3, Qt::AlignBottom);
-    containerGrid->addWidget(fastForward, 2, 4, Qt::AlignBottom);
-    containerGrid->addWidget(next,        2, 5, Qt::AlignBottom);
+    containerGrid->addWidget(menu,        1, 1, Qt::AlignBottom);
+    containerGrid->addWidget(context,     1, 2, Qt::AlignBottom);
+    containerGrid->addWidget(info,        1, 3, Qt::AlignBottom);
+    containerGrid->addWidget(back,        1, 4, Qt::AlignBottom);
+
+    containerGrid->addWidget(previous,    2, 0, Qt::AlignTop);
+    containerGrid->addWidget(rewind,      2, 1, Qt::AlignTop);
+    containerGrid->addWidget(stop,        2, 2, Qt::AlignTop);
+    containerGrid->addWidget(playPause,   2, 3, Qt::AlignTop);
+    containerGrid->addWidget(fastForward, 2, 4, Qt::AlignTop);
+    containerGrid->addWidget(next,        2, 5, Qt::AlignTop);
 
     containerGrid->addWidget(up,          0, 8, Qt::AlignBottom);
     containerGrid->addWidget(down,        2, 8, Qt::AlignTop);
