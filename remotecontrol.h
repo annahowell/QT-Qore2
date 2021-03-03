@@ -28,19 +28,19 @@ class RemoteControl : public QWidget
     Q_OBJECT
 
 public:
-    RemoteControl();
+    RemoteControl(Connection *connection);
     void setShortcuts();
 
 private:
+    Connection *m_connection;
     QGridLayout *grid;
     QList<QPushButton*> buttons;
+    QSettings *settings;
     QPushButton *previous, *rewind,   *stop,       *playPause, *fastForward, *next,
                 *menu,     *context,  *info,       *back,
                 *up,       *down,     *left,       *right,
                 *enter,    *volumeUp, *volumeLogo, *volumeDown;
     QSignalMapper  *signalMapper;
-    QSettings *settings;
-    Connection *connection;
 
     void createWidgets();
     void setUpLayout();

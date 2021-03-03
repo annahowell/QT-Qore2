@@ -8,8 +8,9 @@ class Connection : public QObject
 {
     Q_OBJECT
 public:
-    explicit Connection(const QUrl &url, bool debug = false, QObject *parent = nullptr);
-    void send(QJsonDocument jsondoc);
+    explicit Connection(bool debug = false, QObject *parent = nullptr);
+    void constructUrl();
+    void send(QJsonDocument jsonDoc);
     ~Connection();
 
 Q_SIGNALS:
@@ -17,12 +18,14 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void onConnected();
+    void onDisconnected();
     void onTextMessageReceived(QString message);
 
 private:
+    QSettings settings;
     QWebSocket m_webSocket;
-    QUrl m_url;
-    QJsonDocument jsonDocument;
+    QString url;
+    QJsonDocument m_jsonDoc;
     bool m_debug;
 };
 

@@ -3,8 +3,9 @@
 
 #include <QMainWindow>
 #include <QGridLayout>
-#include <QSettings>
 #include <QCloseEvent>
+#include "settings.h"
+#include "connection.h"
 #include "remotecontrol.h"
 
 class MainWindow : public QMainWindow
@@ -21,13 +22,15 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
-    bool closing;
+    bool closing = false;
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
     QGridLayout *quitGrid;
     QLabel *confirmMsg;
     QTabWidget *tabs;
     QPushButton *cancelButton, *quitButton;
+    Settings *settings;
+    Connection *connection;
     RemoteControl *remoteControl;
 
     void handleTabChanged(int index);

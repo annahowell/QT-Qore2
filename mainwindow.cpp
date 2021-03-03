@@ -1,25 +1,15 @@
 #include "mainwindow.h"
-#include "settings.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), trayIcon(new QSystemTrayIcon(this))
 {
-    // App icon
-    auto appIcon = QIcon(":/icons/tray-icon-white.svg");
-
+    QIcon appIcon = QIcon(":/icons/tray-icon-white.svg");
     this->trayIcon->setIcon(appIcon);
     this->setWindowIcon(appIcon);
+    this->trayIcon->show();
 
-    // Displaying the tray icon
-    this->trayIcon->show();     // Note: without explicitly calling show(), QSystemTrayIcon::activated signal will never be emitted!
+    QAction *exitAction = new QAction(tr("&Exit"), this);
 
-
-    closing = false;
-
-    auto exitAction = new QAction(tr("&Exit"), this);
-    auto minimizeAction = new QAction(tr("&Minimize"), this);
-
-    connect(exitAction, &QAction::triggered, [this]()
-    {
+    connect(exitAction, &QAction::triggered, [this]() {
         closing = true;
         close();
     });
@@ -27,37 +17,26 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), trayIcon(new QSys
     // Interaction
     connect(trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::iconActivated);
 
-    remoteControl = new RemoteControl();
-    tabs = new QTabWidget(this);
+    connection    = new Connection(true);
+    settings      = new Settings(connection);
+    remoteControl = new RemoteControl(connection);
+    tabs          = new QTabWidget(this);
 
     tabs->setFixedSize(490, 154);
     tabs->addTab(remoteControl, QString::fromUtf8("Remote"));
-    tabs->addTab(new Settings(), QString::fromUtf8("Settings"));
+    tabs->addTab(settings, QString::fromUtf8("Settings"));
     tabs->addTab(MainWindow::handleQuit(), QString::fromUtf8("Quit"));
-
-    connect(tabs, &QTabWidget::currentChanged, this, &MainWindow::handleTabChanged);
 
     setWindowTitle(QString::fromUtf8("Qore2"));
     setFixedSize(490, 154);
     show();
 }
 
-void MainWindow::handleTabChanged(int index)
-{
-    if (index == 0) {
-        //remoteControl->setShortcuts();
-    }
-}
-
-
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if(closing)
-    {
+    if (closing) {
         event->accept();
-    }
-    else
-    {
+    } else {
         this->hide();
         event->ignore();
     }
@@ -65,14 +44,15 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
-    //if (reason == QSystemTrayIcon::Trigger) {
+    if (reason == QSystemTrayIcon::Trigger) {
         if (isVisible()) {
             hide();
         } else {
             show();
+            setFocus();
             activateWindow();
         }
-    //}
+    }
 }
 
 QWidget* MainWindow::handleQuit()
@@ -95,11 +75,13 @@ QWidget* MainWindow::handleQuit()
     quitGrid->setColumnMinimumWidth(4, 50);
 
     quitGrid->addWidget(confirmMsg,   0, 1, 1, 3, Qt::AlignCenter); //row col rowSpan colSpan
-    quitGrid->addWidget(cancelButton, 1, 1, 1, 1, Qt::AlignHCenter | Qt::AlignTop);
-    quitGrid->addWidget(quitButton,   1, 3, 1, 1, Qt::AlignHCenter | Qt::AlignTop);
+    quitGrid->addWidget(cancelButton, 1, 1, 1, 1, Qt::AlignCenter);
+    quitGrid->addWidget(quitButton,   1, 3, 1, 1, Qt::AlignCenter);
 
-    connect(cancelButton,  &QPushButton::clicked, this, [this]{ tabs->setCurrentIndex(0); });
-    connect(quitButton, &QPushButton::clicked, qApp, &QApplication::quit);
+    connect(quitButton,   &QPushButton::clicked, this, &QApplication::quit);
+    connect(cancelButton, &QPushButton::clicked, this, [this]{
+        tabs->setCurrentIndex(0);
+    });
 
     quitWidget->setLayout(quitGrid);
 

@@ -1,9 +1,7 @@
 #include "remotecontrol.h"
 
-RemoteControl::RemoteControl()
+RemoteControl::RemoteControl(Connection *connection) : m_connection(connection)
 {
-    connection = new Connection(QUrl(QStringLiteral("ws://192.168.9.201:9090")), true);
-
     createWidgets();
     setShortcuts();
     setUpLayout();
@@ -241,5 +239,5 @@ void RemoteControl::handleButton(int buttonCode)
             break;
     }
 
-    connection->send(QJsonDocument(json));
+    m_connection->send(QJsonDocument(json));
 }
