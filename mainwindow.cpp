@@ -2,56 +2,53 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), trayIcon(new QSystemTrayIcon(this))
 {
-    // Create and setup the tray icon and intercept attemps to close the app
+    // Create and setup the tray icon and intercept attemps to close the
+    // app so we can minimise instead
     QIcon appIcon = QIcon(":/icons/tray-icon-white.svg");
     this->trayIcon->setIcon(appIcon);
     this->setWindowIcon(appIcon);
     this->trayIcon->show();
 
-    QAction *exitAction = new QAction(tr("&Exit"), this);
+    connect(trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::toggleVisibility);
 
-    connect(exitAction, &QAction::triggered, [this]() {
-        closing = true;
-        close();
-    });
+    // Create an empty global hotkey to handle opening and closing, the
+    // Settings class will actually set the shortcut
+    QHotkey *hotkey = new QHotkey();
+    connect(hotkey, &QHotkey::activated, this, &MainWindow::toggleVisibility);
 
-    connect(trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::iconActivated);
-
+    // Setup the basic components of the app
     connection    = new Connection(true);
-    settings      = new Settings(connection);
+    settings      = new Settings(connection, hotkey);
     remoteControl = new RemoteControl(connection);
-    tabs          = new QTabWidget(this);
 
+    tabs = new QTabWidget(this);
     tabs->setFixedSize(490, 154);
+
     tabs->addTab(remoteControl, QString::fromUtf8("Remote"));
     tabs->addTab(settings, QString::fromUtf8("Settings"));
     tabs->addTab(MainWindow::handleQuit(), QString::fromUtf8("Quit"));
 
     setWindowTitle(QString::fromUtf8("Qore2"));
     setFixedSize(490, 154);
+
     show();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if (closing) {
-        event->accept();
-    } else {
-        this->hide();
-        event->ignore();
-    }
+    event->ignore();
+    toggleVisibility();
 }
 
-void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
+void MainWindow::toggleVisibility()
 {
-    if (reason == QSystemTrayIcon::Trigger) {
-        if (isVisible()) {
-            hide();
-        } else {
-            show();
-            setFocus();
-            activateWindow();
-        }
+    if (isVisible()) {
+        hide();
+    } else {
+        closing = false;
+        show();
+        setFocus();
+        activateWindow();
     }
 }
 

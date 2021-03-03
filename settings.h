@@ -2,6 +2,7 @@
 #define SETTINGS_H
 
 #include <QtWidgets>
+#include <QHotkey>
 #include "connection.h"
 
 class Settings : public QWidget
@@ -9,7 +10,7 @@ class Settings : public QWidget
     Q_OBJECT
 
 public:
-    Settings(Connection *connection);
+    Settings(Connection *connection, QHotkey *hotkey);
 
 private:
     Connection *m_connection;
@@ -17,8 +18,9 @@ private:
     QLabel *ipLabel, *portLabel, *hotKeyLabel;
     QLineEdit *ipEdit, *portEdit;
     QKeySequenceEdit *hotKeyEdit;
-    QSettings settings;
+    QSettings m_qSettings;
     QPushButton *saveButton, *resetButton;
+    QHotkey *m_hotkey;
 
     void setDefaults(bool doReset);
     void createWidgets();

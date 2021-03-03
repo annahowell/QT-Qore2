@@ -1,19 +1,20 @@
 #include "settings.h"
 
-Settings::Settings(Connection *connection) : m_connection(connection)
+Settings::Settings(Connection *connection, QHotkey *hotkey) : m_connection(connection), m_hotkey(hotkey)
 {
     setDefaults(false);
     createWidgets();
 }
 
-
 void Settings::setDefaults(bool doReset)
 {
-    if (!settings.contains("ip")     || doReset) {settings.setValue("ip",    "192.168.9.201");}
-    if (!settings.contains("port")   || doReset) {settings.setValue("port",  "9090");}
-    if (!settings.contains("hotKey") || doReset) {settings.setValue("hotKey", QKeySequence(Qt::ShiftModifier + Qt::Key_1));}
-}
+    if (!m_qSettings.contains("ip")     || doReset) {m_qSettings.setValue("ip",    "192.168.9.201");}
+    if (!m_qSettings.contains("port")   || doReset) {m_qSettings.setValue("port",  "9090");}
+    if (!m_qSettings.contains("hotkey") || doReset) {m_qSettings.setValue("hotkey", QKeySequence(Qt::ShiftModifier + Qt::Key_1));}
 
+    m_hotkey->setShortcut(QKeySequence::fromString(m_qSettings.value("hotkey").toString()));
+    m_hotkey->setRegistered(true);
+}
 
 void Settings::createWidgets()
 {
@@ -22,9 +23,9 @@ void Settings::createWidgets()
     ipLabel     = new QLabel(tr("IP"));
     portLabel   = new QLabel(tr("Port"));
     hotKeyLabel = new QLabel(tr("Hotkey"));
-    ipEdit      = new QLineEdit(settings.value("ip").toString());
-    portEdit    = new QLineEdit(settings.value("port").toString());
-    hotKeyEdit  = new QKeySequenceEdit(settings.value("hotKey").toString());
+    ipEdit      = new QLineEdit(m_qSettings.value("ip").toString());
+    portEdit    = new QLineEdit(m_qSettings.value("port").toString());
+    hotKeyEdit  = new QKeySequenceEdit(m_qSettings.value("hotkey").toString());
 
     ipEdit->setToolTip(QString("Set the IP address of the computer running Kodi"));
     portEdit->setToolTip(QString("Set the websocket port. Kodi uses 9090 by default"));
@@ -58,11 +59,15 @@ void Settings::createWidgets()
 
 void Settings::saveSettings()
 {
-    settings.setValue("ip",     ipEdit->displayText());
-    settings.setValue("port",   portEdit->displayText());
-    settings.setValue("hotKey", hotKeyEdit->keySequence());
+    m_qSettings.setValue("ip",     ipEdit->displayText());
+    m_qSettings.setValue("port",   portEdit->displayText());
+    m_qSettings.setValue("hotkey", hotKeyEdit->keySequence().toString());
 
     m_connection->constructUrl();
+
+    m_hotkey->setRegistered(false);
+    m_hotkey->setShortcut(QKeySequence::fromString(m_qSettings.value("hotkey").toString()));
+    m_hotkey->setRegistered(true);
 }
 
 
@@ -70,7 +75,7 @@ void Settings::resetSettings()
 {
     setDefaults(true);
 
-    ipEdit->setText(settings.value("ip").toString());
-    portEdit->setText(settings.value("port").toString());
+    ipEdit->setText(m_qSettings.value("ip").toString());
+    portEdit->setText(m_qSettings.value("port").toString());
     hotKeyEdit->setKeySequence(QKeySequence(Qt::ShiftModifier + Qt::Key_1));
 }

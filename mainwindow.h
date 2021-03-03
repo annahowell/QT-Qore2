@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QGridLayout>
 #include <QCloseEvent>
+#include <QHotkey>
 #include "settings.h"
 #include "connection.h"
 #include "remotecontrol.h"
@@ -16,7 +17,7 @@ public:
     MainWindow(QWidget *parent = 0);
 
 public slots:
-    void iconActivated(QSystemTrayIcon::ActivationReason);
+    void toggleVisibility();
 
 protected:
     void closeEvent(QCloseEvent *event) override;
