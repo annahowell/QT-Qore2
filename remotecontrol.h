@@ -31,6 +31,9 @@ public:
     RemoteControl(Connection *connection);
     void setShortcuts();
 
+signals:
+    void clicked(const QString &text);
+
 private:
     Connection *m_connection;
     QGridLayout *grid;

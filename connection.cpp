@@ -11,7 +11,7 @@ Connection::Connection(bool debug, QObject *parent) : QObject(parent), m_debug(d
 void Connection::constructUrl()
 {
     // We're changing the url, so if the connection is open we should close it
-    // It will attempt to reconnect next time the remote is used
+    // and let it attempt to reconnect next time the remote is used
     if (m_webSocket.isValid()) {
         m_webSocket.close();
     }
@@ -49,7 +49,6 @@ void Connection::onConnected()
 
     connect(&m_webSocket, &QWebSocket::textFrameReceived, this, &Connection::onTextMessageReceived);
 
-
     m_webSocket.sendTextMessage(m_jsonDoc.toJson());
 }
 
@@ -72,7 +71,7 @@ void Connection::onDisconnected()
 Connection::~Connection()
 {
     if (m_debug) {
-        qDebug() << "Application quitting - closing connection due";
+        qDebug() << "Application quitting - closing connection";
     }
 
     m_webSocket.close();

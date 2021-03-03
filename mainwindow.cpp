@@ -2,6 +2,7 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), trayIcon(new QSystemTrayIcon(this))
 {
+    // Create and setup the tray icon and intercept attemps to close the app
     QIcon appIcon = QIcon(":/icons/tray-icon-white.svg");
     this->trayIcon->setIcon(appIcon);
     this->setWindowIcon(appIcon);
@@ -14,7 +15,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), trayIcon(new QSys
         close();
     });
 
-    // Interaction
     connect(trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::iconActivated);
 
     connection    = new Connection(true);

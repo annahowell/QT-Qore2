@@ -53,7 +53,7 @@ void Settings::createWidgets()
     setLayout(grid);
 
     connect(resetButton, &QPushButton::pressed, this, [this]{ resetSettings(); });
-    connect(saveButton,  &QPushButton::pressed, this, [this]{ saveSettings();  });
+    connect(saveButton,  &QPushButton::pressed, this, [this]{ saveSettings(); });
 }
 
 void Settings::saveSettings()
