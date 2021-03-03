@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
     QApplication::setApplicationName("qore2-kodi-remote");
 
     MainWindow w;
+    w.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint);
     w.show();
 
     return a.exec();

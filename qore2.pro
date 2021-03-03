@@ -27,3 +27,12 @@ HEADERS  += mainwindow.h \
             connection.h \
             remotecontrol.h \
             settings.h
+
+RESOURCES += \
+    resources.qrc
+
+QMAKE_INFO_PLIST = Info.plist
+
+DISTFILES += \
+    README.md \
+    Info.plist

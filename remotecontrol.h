@@ -33,16 +33,14 @@ public:
 
 private:
     QGridLayout *grid;
-    Connection *connection;
     QList<QPushButton*> buttons;
     QPushButton *previous, *rewind,   *stop,       *playPause, *fastForward, *next,
                 *menu,     *context,  *info,       *back,
                 *up,       *down,     *left,       *right,
                 *enter,    *volumeUp, *volumeLogo, *volumeDown;
-
-
-    QSignalMapper* signalMapper;
-    QSettings settings;
+    QSignalMapper  *signalMapper;
+    QSettings *settings;
+    Connection *connection;
 
     void createWidgets();
     void setUpLayout();

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QGridLayout>
 #include <QSettings>
+#include <QCloseEvent>
 #include "remotecontrol.h"
 
 class MainWindow : public QMainWindow
@@ -12,12 +13,26 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+
+public slots:
+    void iconActivated(QSystemTrayIcon::ActivationReason);
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
 
 private:
-    QSettings s;
-    RemoteControl *rc;
-    void aaa();
+    bool closing;
+    QSystemTrayIcon *trayIcon;
+    QMenu *trayIconMenu;
+    QGridLayout *quitGrid;
+    QLabel *confirmMsg;
+    QTabWidget *tabs;
+    QPushButton *cancelButton, *quitButton;
+    RemoteControl *remoteControl;
+
+    void handleTabChanged(int index);
+    QMenu *createMenu();
+    QWidget *handleQuit();
 };
 
 #endif // MAINWINDOW_H

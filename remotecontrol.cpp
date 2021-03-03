@@ -2,7 +2,7 @@
 
 RemoteControl::RemoteControl()
 {
-    connection = new Connection(QUrl(QStringLiteral("ws://127.0.0.1:9090")), true);
+    connection = new Connection(QUrl(QStringLiteral("ws://192.168.9.201:9090")), true);
 
     createWidgets();
     setShortcuts();
@@ -150,70 +150,95 @@ void RemoteControl::handleButton(int buttonCode)
     };
 
     switch (buttonCode) {
+        case PREVIOUS:
+            json.insert("method", "Input.ExecuteAction");
+            action.insert("action", "skipprevious");
+            json.insert("params", action);
+            break;
 
-    case UP:
-        json.insert("method", "Input.Up");
-        break;
+        case REWIND:
+            json.insert("method", "Input.ExecuteAction");
+            action.insert("action", "stepback");
+            json.insert("params", action);
+            break;
 
-    case DOWN:
-        json.insert("method", "Input.Down");
-        break;
+        case STOP:
+            json.insert("method", "Input.ExecuteAction");
+            action.insert("action", "stop");
+            json.insert("params", action);
+            break;
 
-    case LEFT:
-        json.insert("method", "Input.Left");
-        break;
+        case PLAY_PAUSE:
+            json.insert("method", "Input.ExecuteAction");
+            action.insert("action", "pause");
+            json.insert("params", action);
+            break;
 
-    case RIGHT:
-        json.insert("method", "Input.Right");
-        break;
+        case FAST_FORWARD:
+            json.insert("method", "Input.ExecuteAction");
+            action.insert("action", "stepforward");
+            json.insert("params", action);
+            break;
 
-    case ENTER:
-        json.insert("method", "Input.Select");
-        break;
+        case NEXT:
+            json.insert("method", "Input.ExecuteAction");
+            action.insert("action", "skipnext");
+            json.insert("params", action);
+            break;
 
-    case VOLUME_DOWN:
-        json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "volumedown");
-        json.insert("params", action);
-        break;
+        case MENU:
+            json.insert("method", "Input.ShowOSD");
+            break;
 
-    case VOLUME_UP:
-        json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "volumeup");
-        json.insert("params", action);
-        break;
+        case CONTEXT:
+            json.insert("method", "Input.ExecuteAction");
+            action.insert("action", "contextmenu");
+            json.insert("params", action);
+            break;
 
-    case PREVIOUS:
-        json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "skipprevious");
-        json.insert("params", action);
-        break;
+        case INFO:
+            json.insert("method", "Input.Info");
+            break;
 
-    case STOP:
-        json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "stop");
-        json.insert("params", action);
-        break;
+        case BACK:
+            json.insert("method", "Input.Back");
+            break;
 
-    case PLAY_PAUSE:
-        json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "pause");
-        json.insert("params", action);
-        break;
+        case UP:
+            json.insert("method", "Input.Up");
+            break;
 
-    case NEXT:
-        json.insert("method", "Input.ExecuteAction");
-        action.insert("action", "skipnext");
-        json.insert("params", action);
-        break;
+        case DOWN:
+            json.insert("method", "Input.Down");
+            break;
 
-    case BACK:
-        json.insert("method", "Input.Back");
-        break;
+        case LEFT:
+            json.insert("method", "Input.Left");
+            break;
 
-    default:
-        json.insert("method", "Input.noop");
-        break;
+        case RIGHT:
+            json.insert("method", "Input.Right");
+            break;
+
+        case ENTER:
+            json.insert("method", "Input.Select");
+            break;
+
+        case VOLUME_DOWN:
+            json.insert("method", "Input.ExecuteAction");
+            action.insert("action", "volumedown");
+            json.insert("params", action);
+            break;
+
+        case VOLUME_UP:
+            json.insert("method", "Input.ExecuteAction");
+            action.insert("action", "volumeup");
+            json.insert("params", action);
+            break;
+
+        default:
+            json.insert("method", "Input.noop");
+            break;
     }
 
     connection->send(QJsonDocument(json));
