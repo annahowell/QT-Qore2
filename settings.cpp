@@ -20,9 +20,9 @@ void Settings::createWidgets()
 {
     grid = new QGridLayout;
 
-    ipLabel     = new QLabel(tr("IP"));
-    portLabel   = new QLabel(tr("Port"));
-    hotKeyLabel = new QLabel(tr("Hotkey"));
+    ipLabel     = new QLabel(tr("IP:"));
+    portLabel   = new QLabel(tr("Port:"));
+    hotKeyLabel = new QLabel(tr("Hotkey:"));
     ipEdit      = new QLineEdit(m_qSettings.value("ip").toString());
     portEdit    = new QLineEdit(m_qSettings.value("port").toString());
     hotKeyEdit  = new QKeySequenceEdit(m_qSettings.value("hotkey").toString());
@@ -32,24 +32,27 @@ void Settings::createWidgets()
     hotKeyEdit->setToolTip(QString("Set the global hotkey for showing and hiding Qore2"));
 
     resetButton = new QPushButton("Defaults");
-    saveButton  = new QPushButton("Save Settings");
+    saveButton  = new QPushButton("Save");
 
     ipLabel->setAlignment  (Qt::AlignRight | Qt::AlignVCenter);
     portLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     hotKeyLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
 
+    grid->setColumnMinimumWidth (2, 90);
+
+
     grid->addWidget(ipLabel,     0, 0);
     grid->addWidget(ipEdit,      0, 1);
 
     grid->addWidget(hotKeyLabel, 0, 2);
-    grid->addWidget(hotKeyEdit,  0, 3);
+    grid->addWidget(hotKeyEdit,  0, 3, 1, 2);
 
     grid->addWidget(portLabel,   1, 0);
     grid->addWidget(portEdit,    1, 1);
 
-    grid->addWidget(resetButton, 3, 2);
-    grid->addWidget(saveButton,  3, 3);
+    grid->addWidget(resetButton, 3, 3);
+    grid->addWidget(saveButton,  3, 4);
 
     setLayout(grid);
 

@@ -45,7 +45,9 @@ void MainWindow::toggleVisibility()
     if (isVisible()) {
         hide();
     } else {
-        closing = false;
+        // If we're reopening we want to always show the remote
+        tabs->setCurrentIndex(0);
+
         show();
         setFocus();
         activateWindow();

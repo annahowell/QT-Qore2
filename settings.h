@@ -21,6 +21,7 @@ private:
     QSettings m_qSettings;
     QPushButton *saveButton, *resetButton;
     QHotkey *m_hotkey;
+    QSystemTrayIcon *m_trayIcon;
 
     void setDefaults(bool doReset);
     void createWidgets();

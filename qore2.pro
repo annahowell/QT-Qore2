@@ -18,6 +18,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET    = qore2
 TEMPLATE  = app
 
+LIBS += -framework AppKit
 
 SOURCES  += main.cpp\
             mainwindow.cpp \
