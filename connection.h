@@ -7,6 +7,7 @@
 class Connection : public QObject
 {
     Q_OBJECT
+
 public:
     explicit Connection(bool debug = false, QObject *parent = nullptr);
     void constructUrl();

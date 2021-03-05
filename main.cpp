@@ -1,6 +1,8 @@
-#include "mainwindow.h"
 #include <QApplication>
 #include <QSettings>
+#include "mainwindow.h"
+#include "trayapp.h"
+
 
 int main(int argc, char *argv[])
 {
@@ -10,9 +12,11 @@ int main(int argc, char *argv[])
     QApplication::setOrganizationName("qore2-remote");
     QApplication::setApplicationName("qore2-remote");
 
-    MainWindow w;
-    w.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
-    w.show();
+//    MainWindow w;
+//    w.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
+//    w.show();
+
+    TrayApp ta;
 
     return a.exec();
 }

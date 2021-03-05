@@ -24,12 +24,14 @@ SOURCES  += main.cpp\
             mainwindow.cpp \
             connection.cpp \
             remotecontrol.cpp \
-            settings.cpp
+            settings.cpp \
+            trayapp.cpp
 
 HEADERS  += mainwindow.h \
             connection.h \
             remotecontrol.h \
-            settings.h
+            settings.h \
+            trayapp.h
 
 RESOURCES += \
     resources.qrc
