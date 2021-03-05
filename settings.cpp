@@ -3,7 +3,6 @@
 Settings::Settings(Connection *connection, QHotkey *hotkey) : m_connection(connection), m_hotkey(hotkey)
 {
     setDefaults(false);
-    createWidgets();
 }
 
 void Settings::setDefaults(bool doReset)

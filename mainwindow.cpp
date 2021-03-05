@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 
-MainWindow::MainWindow() : trayIcon(new QSystemTrayIcon(this))
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), trayIcon(new QSystemTrayIcon(this))
 {
     // Create and setup the tray icon and intercept attemps to close the
     // app so we can minimise instead

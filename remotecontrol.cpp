@@ -1,10 +1,48 @@
 #include "remotecontrol.h"
 
+RemoteControl::RemoteControl()
+{
+
+    tabs = new QTabWidget(this);
+    tabs->setFixedSize(490, 154);
+
+    //tabs->addTab(remoteControl, QString::fromUtf8("Remote"));
+    //tabs->addTab(settings, QString::fromUtf8("Settings"));
+    //tabs->addTab(MainWindow::handleQuit(), QString::fromUtf8("Quit"));
+
+    setWindowTitle(QString::fromUtf8("Qore2"));
+    setFixedSize(490, 154);
+
+    show();
+
+
+
+    setFocus();
+    activateWindow();
+}
+
 RemoteControl::RemoteControl(Connection *connection) : m_connection(connection)
 {
-    createWidgets();
-    setShortcuts();
-    setUpLayout();
+//    setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
+
+//    createWidgets();
+//    setShortcuts();
+//    setUpLayout();
+
+    tabs = new QTabWidget(this);
+    tabs->setFixedSize(490, 154);
+
+    //tabs->addTab(remoteControl, QString::fromUtf8("Remote"));
+    //tabs->addTab(settings, QString::fromUtf8("Settings"));
+    //tabs->addTab(MainWindow::handleQuit(), QString::fromUtf8("Quit"));
+
+    setWindowTitle(QString::fromUtf8("Qore2"));
+    setFixedSize(490, 154);
+
+    show();
+
+    setFocus();
+    activateWindow();
 }
 
 void RemoteControl::createWidgets()
@@ -136,6 +174,14 @@ void RemoteControl::setUpLayout()
     setLayout(containerGrid);
 }
 
+void RemoteControl::closeEvent(QCloseEvent *event)
+{
+
+
+    event->ignore();
+
+    this->destroy();
+}
 
 void RemoteControl::handleButton(int buttonCode)
 {

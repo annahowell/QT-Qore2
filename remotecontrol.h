@@ -23,19 +23,24 @@
 #define VOLUME_DOWN  17
 
 
-class RemoteControl : public QWidget
+class RemoteControl : public QMainWindow
 {
     Q_OBJECT
 
 public:
+    RemoteControl();
     RemoteControl(Connection *connection);
     void setShortcuts();
 
-signals:
-    void clicked(const QString &text);
+    signals:
+        void clicked(const QString &text);
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
 
 private:
     Connection *m_connection;
+    QTabWidget *tabs;
     QGridLayout *grid;
     QList<QPushButton*> buttons;
     QSettings *settings;
