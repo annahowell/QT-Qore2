@@ -16,10 +16,7 @@ int main(int argc, char *argv[])
 //    w.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
 //    w.show();
 
-    RemoteControl rc;
-    //TrayApp ta;
-    rc.setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
-
+    TrayApp ta;
 
     return a.exec();
 }

@@ -41,9 +41,11 @@ protected:
 private:
     Connection *m_connection;
     QTabWidget *tabs;
-    QGridLayout *grid;
+    QGridLayout *grid, *quitGrid;
     QList<QPushButton*> buttons;
     QSettings *settings;
+    QLabel *confirmMsg;
+    QPushButton *cancelButton, *quitButton;
     QPushButton *previous, *rewind,   *stop,       *playPause, *fastForward, *next,
                 *menu,     *context,  *info,       *back,
                 *up,       *down,     *left,       *right,
@@ -52,6 +54,8 @@ private:
 
     void createWidgets();
     void setUpLayout();
+    QWidget *handleQuit();
+
 
 private slots:
     void handleButton(int buttonCode);

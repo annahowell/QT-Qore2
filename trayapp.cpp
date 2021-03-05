@@ -15,7 +15,7 @@ TrayApp::TrayApp()
 
     // Create an empty global hotkey to handle opening and closing, the
     // Settings class will actually set the shortcut
-    QHotkey *hotkey = new QHotkey();
+    QHotkey *hotkey = new QHotkey(QKeySequence("ctrl+Q"));
     connect(hotkey, &QHotkey::activated, this, &TrayApp::toggleVisibility);
 
 
@@ -36,11 +36,14 @@ void TrayApp::toggleVisibility()
 
         remoteControl = new RemoteControl(connection);
 
+        // Drawer is good, opens to another screen and focuses etc with raise() with border
+        // tooltip is good, ooens to another screen and focuses etc with raise no border
 
-        remoteControl->activateWindow();
-        remoteControl->setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
+        remoteControl->setWindowFlags(Qt::Drawer | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
 
         remoteControl->show();
         remoteControl->setFocus();
+        remoteControl->activateWindow();
+        remoteControl->raise();
     }
 }
