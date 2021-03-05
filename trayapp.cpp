@@ -9,6 +9,8 @@ TrayApp::TrayApp()
     QIcon appIcon = QIcon(":/icons/tray-icon-white.svg");
     trayIcon->setIcon(appIcon);
 
+
+
     QApplication::setWindowIcon(appIcon);
 
     trayIcon->show();
