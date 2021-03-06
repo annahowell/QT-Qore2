@@ -19,6 +19,9 @@ public:
 public slots:
     void toggleVisibility();
 
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override;
+
 private:
     Settings        *settings;
     Connection      *connection;
