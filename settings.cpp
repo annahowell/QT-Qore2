@@ -1,30 +1,86 @@
 #include "settings.h"
 
-Settings::Settings(Connection *connection, QHotkey *hotkey) : m_connection(connection), m_hotkey(hotkey)
+Settings::Settings(Connection *connection, QHotkey *hotkey, QSystemTrayIcon *trayIcon)
+    : m_connection(connection), m_hotkey(hotkey), m_trayIcon(trayIcon)
 {
-    setDefaults(false);
+    settings = new QSettings;
+
+    setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint);
+
+    setDefaults(false); // False we're not doing a reset
+    setupFromDisk();
+    createWidgets();
 }
+
 
 void Settings::setDefaults(bool doReset)
 {
-    if (!m_qSettings.contains("ip")     || doReset) {m_qSettings.setValue("ip",    "192.168.9.201");}
-    if (!m_qSettings.contains("port")   || doReset) {m_qSettings.setValue("port",  "9090");}
-    if (!m_qSettings.contains("hotkey") || doReset) {m_qSettings.setValue("hotkey", QKeySequence(Qt::ShiftModifier + Qt::Key_1));}
+    // Set defaults if either they params don't exist or we're reseeting to defaults
+    if (!settings->contains("ip") || doReset) {
+        settings->setValue("ip",    "127.0.0.1");
+    }
 
-    m_hotkey->setShortcut(QKeySequence::fromString(m_qSettings.value("hotkey").toString()));
-    m_hotkey->setRegistered(true);
+    if (!settings->contains("port") || doReset) {
+        settings->setValue("port",  "9090");
+    }
+
+    if (!settings->contains("hotkey") || doReset) {
+        settings->setValue("hotkey", QKeySequence(Qt::ControlModifier + Qt::Key_1));
+    }
+
+    if (!settings->contains("darkTheme") || doReset) {
+        settings->setValue("darkTheme", false);
+    }
+
+    if (doReset) {
+        ipEdit->setText(settings->value("ip").toString());
+        portEdit->setText(settings->value("port").toString());
+        hotKeyEdit->setKeySequence(QKeySequence(Qt::ControlModifier + Qt::Key_1));
+    }
 }
+
+
+void Settings::setupFromDisk()
+{
+    // Set the connection url
+    QString url = nullptr;
+    QString prefix = "ws://";
+    QString ip = settings->value("ip").toString();
+    QString seperator = ":";
+    QString port = settings->value("port").toString();
+
+    url.reserve(prefix.length() + ip.length() + seperator.length() + port.length());
+    url.append(prefix);
+    url.append(ip);
+    url.append(seperator);
+    url.append(port);
+
+    m_connection->setUrl(url);
+
+    // Set the hotkey
+    m_hotkey->setRegistered(false);
+    m_hotkey->setShortcut(QKeySequence::fromString(settings->value("hotkey").toString()));
+    m_hotkey->setRegistered(true);
+
+    // Set the tray icon
+    darkTheme = settings->value("darkTheme").toBool();
+
+    m_trayIcon->setIcon(darkTheme ? QIcon(WHITE_ICON) : QIcon(BLACK_ICON));
+    m_trayIcon->show();
+}
+
 
 void Settings::createWidgets()
 {
-    grid = new QGridLayout;
+    QGridLayout *grid = new QGridLayout;
 
-    ipLabel     = new QLabel(tr("IP:"));
-    portLabel   = new QLabel(tr("Port:"));
-    hotKeyLabel = new QLabel(tr("Hotkey:"));
-    ipEdit      = new QLineEdit(m_qSettings.value("ip").toString());
-    portEdit    = new QLineEdit(m_qSettings.value("port").toString());
-    hotKeyEdit  = new QKeySequenceEdit(m_qSettings.value("hotkey").toString());
+    ipLabel         = new QLabel(tr("IP:"));
+    portLabel       = new QLabel(tr("Port:"));
+    hotKeyLabel     = new QLabel(tr("Hotkey:"));
+    ipEdit          = new QLineEdit(settings->value("ip").toString());
+    portEdit        = new QLineEdit(settings->value("port").toString());
+    hotKeyEdit      = new QKeySequenceEdit(settings->value("hotkey").toString());
+    toggleMenuIcon  = new QPushButton(QString("Toggle Icon Colour"));
 
     ipEdit->setToolTip(QString("Set the IP address of the computer running Kodi"));
     portEdit->setToolTip(QString("Set the websocket port. Kodi uses 9090 by default"));
@@ -33,51 +89,53 @@ void Settings::createWidgets()
     resetButton = new QPushButton("Defaults");
     saveButton  = new QPushButton("Save");
 
-    ipLabel->setAlignment  (Qt::AlignRight | Qt::AlignVCenter);
-    portLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    hotKeyLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-
-
     grid->setColumnMinimumWidth (2, 90);
 
-
-    grid->addWidget(ipLabel,     0, 0);
+    grid->addWidget(ipLabel,     0, 0, Qt::AlignRight | Qt::AlignVCenter);
     grid->addWidget(ipEdit,      0, 1);
 
-    grid->addWidget(hotKeyLabel, 0, 2);
+    grid->addWidget(hotKeyLabel, 0, 2, Qt::AlignRight | Qt::AlignVCenter);
     grid->addWidget(hotKeyEdit,  0, 3, 1, 2);
 
-    grid->addWidget(portLabel,   1, 0);
+    grid->addWidget(portLabel,   1, 0, Qt::AlignRight | Qt::AlignVCenter);
     grid->addWidget(portEdit,    1, 1);
 
-    grid->addWidget(resetButton, 3, 3);
-    grid->addWidget(saveButton,  3, 4);
+    grid->addWidget(toggleMenuIcon, 3, 0, 1, 2, Qt::AlignBottom);
+
+    grid->addWidget(resetButton, 3, 3, Qt::AlignBottom);
+    grid->addWidget(saveButton,  3, 4, Qt::AlignBottom);
 
     setLayout(grid);
 
-    connect(resetButton, &QPushButton::pressed, this, [this]{ resetSettings(); });
-    connect(saveButton,  &QPushButton::pressed, this, [this]{ saveSettings(); });
+    connect(toggleMenuIcon, &QPushButton::pressed, this, &Settings::toggleMenuIconColor);
+
+    connect(resetButton, &QPushButton::pressed, this, &Settings::resetSettings);
+    connect(saveButton,  &QPushButton::pressed, this, &Settings::saveSettings);
 }
 
-void Settings::saveSettings()
+
+void Settings::toggleMenuIconColor()
 {
-    m_qSettings.setValue("ip",     ipEdit->displayText());
-    m_qSettings.setValue("port",   portEdit->displayText());
-    m_qSettings.setValue("hotkey", hotKeyEdit->keySequence().toString());
+    darkTheme = !darkTheme;
 
-    m_connection->constructUrl();
-
-    m_hotkey->setRegistered(false);
-    m_hotkey->setShortcut(QKeySequence::fromString(m_qSettings.value("hotkey").toString()));
-    m_hotkey->setRegistered(true);
+    m_trayIcon->setIcon(darkTheme ? QIcon(WHITE_ICON) : QIcon(BLACK_ICON));
 }
 
 
 void Settings::resetSettings()
 {
-    setDefaults(true);
+    setDefaults(true);  // True we're doing a reset
 
-    ipEdit->setText(m_qSettings.value("ip").toString());
-    portEdit->setText(m_qSettings.value("port").toString());
-    hotKeyEdit->setKeySequence(QKeySequence(Qt::ShiftModifier + Qt::Key_1));
+    setupFromDisk();
+}
+
+
+void Settings::saveSettings()
+{
+    settings->setValue("ip",        ipEdit->displayText());
+    settings->setValue("port",      portEdit->displayText());
+    settings->setValue("hotkey",    hotKeyEdit->keySequence().toString());
+    settings->setValue("darkTheme", darkTheme);
+
+    setupFromDisk();
 }

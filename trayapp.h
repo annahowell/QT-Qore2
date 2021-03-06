@@ -8,11 +8,11 @@
 #include "settings.h"
 #include "connection.h"
 #include "remotecontrol.h"
+#include "mainwindow.h"
 
 class TrayApp : public QObject
 {
     Q_OBJECT
-
 public:
     TrayApp();
 
@@ -20,11 +20,11 @@ public slots:
     void toggleVisibility();
 
 private:
-    QSystemTrayIcon *trayIcon;
-    Settings *settings;
-    Connection *connection;
-    RemoteControl *remoteControl;
-    bool opened = false;
+    Settings        *settings;
+    Connection      *connection;
+    RemoteControl   *remoteControl;
+    MainWindow      *mainWindow;
+    bool             opened;
 };
 
 #endif // TRAYAPP_H

@@ -2,6 +2,7 @@
 #define REMOTECONTROL_H
 
 #include <QtWidgets>
+#include <QHotkey>
 #include "connection.h"
 
 #define PREVIOUS     1
@@ -23,39 +24,26 @@
 #define VOLUME_DOWN  17
 
 
-class RemoteControl : public QMainWindow
+class RemoteControl : public QWidget
 {
     Q_OBJECT
 
 public:
-    RemoteControl();
     RemoteControl(Connection *connection);
-    void setShortcuts();
-
-    signals:
-        void clicked(const QString &text);
-
-protected:
-    void closeEvent(QCloseEvent *event) override;
 
 private:
-    Connection *m_connection;
-    QTabWidget *tabs;
-    QGridLayout *grid, *quitGrid;
-    QList<QPushButton*> buttons;
-    QSettings *settings;
-    QLabel *confirmMsg;
-    QPushButton *cancelButton, *quitButton;
-    QPushButton *previous, *rewind,   *stop,       *playPause, *fastForward, *next,
-                *menu,     *context,  *info,       *back,
-                *up,       *down,     *left,       *right,
-                *enter,    *volumeUp, *volumeLogo, *volumeDown;
-    QSignalMapper  *signalMapper;
+    Connection          *m_connection;
+    QSignalMapper       *signalMapper;
+    QList<QPushButton*>  buttons;
+    QPushButton         *cancelButton, *quitButton;
+    QPushButton         *previous, *rewind,   *stop,       *playPause, *fastForward, *next,
+                        *menu,     *context,  *info,       *back,
+                        *up,       *down,     *left,       *right,
+                        *enter,    *volumeUp, *volumeLogo, *volumeDown;
 
     void createWidgets();
+    void setShortcuts();
     void setUpLayout();
-    QWidget *handleQuit();
-
 
 private slots:
     void handleButton(int buttonCode);

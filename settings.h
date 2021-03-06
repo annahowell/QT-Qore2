@@ -5,28 +5,37 @@
 #include <QHotkey>
 #include "connection.h"
 
+#define BLACK_ICON ":/icons/tray-icon-black.svg"
+#define WHITE_ICON ":/icons/tray-icon-white.svg"
+
 class Settings : public QWidget
 {
     Q_OBJECT
 
 public:
-    Settings(Connection *connection, QHotkey *hotkey);
+    Settings(Connection *connection, QHotkey *hotkey, QSystemTrayIcon *trayIcon);
+
+
+private slots:
+    void toggleMenuIconColor();
+    void resetSettings();
+    void saveSettings();
 
 private:
-    Connection *m_connection;
-    QGridLayout *grid;
-    QLabel *ipLabel, *portLabel, *hotKeyLabel;
-    QLineEdit *ipEdit, *portEdit;
+    Connection       *m_connection;
+    QLabel           *ipLabel, *portLabel, *hotKeyLabel;
+    QLineEdit        *ipEdit, *portEdit;
     QKeySequenceEdit *hotKeyEdit;
-    QSettings m_qSettings;
-    QPushButton *saveButton, *resetButton;
-    QHotkey *m_hotkey;
-    QSystemTrayIcon *m_trayIcon;
+    QSettings        *settings;
+    QPushButton      *toggleMenuIcon, *saveButton, *resetButton;
+    QHotkey          *m_hotkey;
+    QSystemTrayIcon  *m_trayIcon;
+    bool              darkTheme;
 
     void setDefaults(bool doReset);
+    void setupFromDisk();
     void createWidgets();
-    void saveSettings();
-    void resetSettings();
+    QString getUrl();
 };
 
 #endif // SETTINGS_H

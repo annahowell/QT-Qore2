@@ -2,26 +2,25 @@
 
 TrayApp::TrayApp()
 {
-    trayIcon = new QSystemTrayIcon();
+    // When the app starts, we don't show it
+    opened = false;
 
-    // Create and setup the tray icon and intercept attemps to close the
-    // app so we can minimise instead
-    QIcon appIcon = QIcon(":/icons/tray-icon-white.svg");
-    trayIcon->setIcon(appIcon);
-    QApplication::setWindowIcon(appIcon);
-    trayIcon->show();
+    // Create empty hotkey and system icon, Settings will actually set the shortcut and icon
+    QHotkey *hotkey = new QHotkey();
+    QSystemTrayIcon *trayIcon = new QSystemTrayIcon();
 
+    connect(hotkey, &QHotkey::activated, this, &TrayApp::toggleVisibility);
     connect(trayIcon, &QSystemTrayIcon::activated, this, &TrayApp::toggleVisibility);
 
-    // Create an empty global hotkey to handle opening and closing, the
-    // Settings class will actually set the shortcut
-    QHotkey *hotkey = new QHotkey(QKeySequence("ctrl+Q"));
-    connect(hotkey, &QHotkey::activated, this, &TrayApp::toggleVisibility);
+    connection = new Connection(true);
+    settings = new Settings(connection, hotkey, trayIcon);
+    remoteControl = new RemoteControl(connection);
 
+    QMenu menu;
+    menu.addAction("Exit",this,SLOT(close()));
 
-    // Setup the basic components of the app
-    connection    = new Connection(true);
-    settings      = new Settings(connection, hotkey);
+    trayIcon->setContextMenu(&menu);
+    //connect(trayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(Actived(QSystemTrayIcon::ActivationReason)));
 }
 
 
@@ -30,20 +29,19 @@ void TrayApp::toggleVisibility()
     if (opened){
         opened = false;
 
-        remoteControl->close();
+        mainWindow->close();
     } else {
         opened = true;
 
-        remoteControl = new RemoteControl(connection);
+        mainWindow = new MainWindow(remoteControl, settings);
 
-        // Drawer is good, opens to another screen and focuses etc with raise() with border
-        // tooltip is good, ooens to another screen and focuses etc with raise no border
+        // Drawer is good, opens to another screen and focuses etc with raise() but has a border
+        // tooltip is good, ooens to another screen and focuses etc with raise() and has no border
+        mainWindow->setWindowFlags(Qt::ToolTip | Qt::WindowStaysOnTopHint);
 
-        remoteControl->setWindowFlags(Qt::Drawer | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
-
-        remoteControl->show();
-        remoteControl->setFocus();
-        remoteControl->activateWindow();
-        remoteControl->raise();
+        mainWindow->show();
+        mainWindow->setFocus();
+        mainWindow->activateWindow();
+        mainWindow->raise();
     }
 }

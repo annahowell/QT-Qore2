@@ -9,25 +9,24 @@ class Connection : public QObject
     Q_OBJECT
 
 public:
-    explicit Connection(bool debug = false, QObject *parent = nullptr);
-    void constructUrl();
+    explicit Connection(bool debug = false);
+    void setUrl(QString url);
     void send(QJsonDocument jsonDoc);
     ~Connection();
 
 Q_SIGNALS:
     void closed();
 
-private Q_SLOTS:
+private slots:
     void onConnected();
     void onDisconnected();
     void onTextMessageReceived(QString message);
 
 private:
-    QSettings settings;
-    QWebSocket m_webSocket;
-    QString url;
+    QWebSocket    m_webSocket;
+    QUrl          m_url;
     QJsonDocument m_jsonDoc;
     bool m_debug;
-};
+}; // 127m5@^Q3qNf
 
 #endif // CONNECTION_H

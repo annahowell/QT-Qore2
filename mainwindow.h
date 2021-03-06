@@ -14,29 +14,16 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = 0);
-
-public slots:
-    void toggleVisibility();
+    MainWindow(RemoteControl *remoteControl, Settings *settings);
 
 protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
-    bool closing = false;
-    QSystemTrayIcon *trayIcon;
-    QMenu *trayIconMenu;
-    QGridLayout *quitGrid;
-    QLabel *confirmMsg;
-    QTabWidget *tabs;
-    QPushButton *cancelButton, *quitButton;
-    Settings *settings;
-    Connection *connection;
-    RemoteControl *remoteControl;
+    RemoteControl *m_remoteControl;
+    Settings      *m_settings;
 
     void handleTabChanged(int index);
-    QMenu *createMenu();
-    QWidget *handleQuit();
 };
 
 #endif // MAINWINDOW_H

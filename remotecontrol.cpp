@@ -1,27 +1,11 @@
 #include "remotecontrol.h"
 
-RemoteControl::RemoteControl(Connection *connection) : m_connection(connection)
+RemoteControl::RemoteControl(Connection *connection)
+    : m_connection(connection)
 {
-//    setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
-
-    //createWidgets();
-    //setShortcuts();
-    //setUpLayout();
-
-    tabs = new QTabWidget(this);
-    tabs->setFixedSize(490, 154);
-
-    //tabs->addTab(remoteControl, QString::fromUtf8("Remote"));
-    //tabs->addTab(settings, QString::fromUtf8("Settings"));
-    tabs->addTab(RemoteControl::handleQuit(), QString::fromUtf8("Quit"));
-
-    setWindowTitle(QString::fromUtf8("Qore2"));
-    setFixedSize(490, 154);
-
-    show();
-    raise();
-    setFocus();
-    activateWindow();
+    createWidgets();
+    setShortcuts();
+    setUpLayout();
 }
 
 void RemoteControl::createWidgets()
@@ -118,48 +102,39 @@ void RemoteControl::setShortcuts()
 
 void RemoteControl::setUpLayout()
 {
-    QGridLayout *containerGrid = new QGridLayout();
+    QGridLayout *grid = new QGridLayout();
 
-    containerGrid->setColumnMinimumWidth (6,  10);
-    containerGrid->setColumnMinimumWidth (10, 20);
+    grid->setColumnMinimumWidth (6,  10);
+    grid->setColumnMinimumWidth (10, 20);
 
-    containerGrid->setHorizontalSpacing(4);
-    containerGrid->setVerticalSpacing(8);
+    grid->setHorizontalSpacing(4);
+    grid->setVerticalSpacing(8);
 
-    containerGrid->setMargin(8);
+    grid->setMargin(8);
 
-    containerGrid->addWidget(menu,        1, 1,  Qt::AlignBottom);
-    containerGrid->addWidget(context,     1, 2,  Qt::AlignBottom);
-    containerGrid->addWidget(info,        1, 3,  Qt::AlignBottom);
-    containerGrid->addWidget(back,        1, 4,  Qt::AlignBottom);
+    grid->addWidget(menu,        1, 1,  Qt::AlignBottom);
+    grid->addWidget(context,     1, 2,  Qt::AlignBottom);
+    grid->addWidget(info,        1, 3,  Qt::AlignBottom);
+    grid->addWidget(back,        1, 4,  Qt::AlignBottom);
 
-    containerGrid->addWidget(previous,    2, 0,  Qt::AlignTop);
-    containerGrid->addWidget(rewind,      2, 1,  Qt::AlignTop);
-    containerGrid->addWidget(stop,        2, 2,  Qt::AlignTop);
-    containerGrid->addWidget(playPause,   2, 3,  Qt::AlignTop);
-    containerGrid->addWidget(fastForward, 2, 4,  Qt::AlignTop);
-    containerGrid->addWidget(next,        2, 5,  Qt::AlignTop);
+    grid->addWidget(previous,    2, 0,  Qt::AlignTop);
+    grid->addWidget(rewind,      2, 1,  Qt::AlignTop);
+    grid->addWidget(stop,        2, 2,  Qt::AlignTop);
+    grid->addWidget(playPause,   2, 3,  Qt::AlignTop);
+    grid->addWidget(fastForward, 2, 4,  Qt::AlignTop);
+    grid->addWidget(next,        2, 5,  Qt::AlignTop);
 
-    containerGrid->addWidget(up,          0, 8,  Qt::AlignBottom);
-    containerGrid->addWidget(down,        2, 8,  Qt::AlignTop);
-    containerGrid->addWidget(left,        1, 7,  Qt::AlignRight);
-    containerGrid->addWidget(right,       1, 9,  Qt::AlignLeft);
-    containerGrid->addWidget(enter,       1, 8,  Qt::AlignCenter);
+    grid->addWidget(up,          0, 8,  Qt::AlignBottom);
+    grid->addWidget(down,        2, 8,  Qt::AlignTop);
+    grid->addWidget(left,        1, 7,  Qt::AlignRight);
+    grid->addWidget(right,       1, 9,  Qt::AlignLeft);
+    grid->addWidget(enter,       1, 8,  Qt::AlignCenter);
 
-    containerGrid->addWidget(volumeUp,    0, 11, Qt::AlignBottom);
-    containerGrid->addWidget(volumeLogo,  1, 11, Qt::AlignLeft);
-    containerGrid->addWidget(volumeDown,  2, 11, Qt::AlignTop);
+    grid->addWidget(volumeUp,    0, 11, Qt::AlignBottom);
+    grid->addWidget(volumeLogo,  1, 11, Qt::AlignLeft);
+    grid->addWidget(volumeDown,  2, 11, Qt::AlignTop);
 
-    setLayout(containerGrid);
-}
-
-void RemoteControl::closeEvent(QCloseEvent *event)
-{
-
-
-    event->ignore();
-
-    this->destroy();
+    setLayout(grid);
 }
 
 void RemoteControl::handleButton(int buttonCode)
@@ -263,38 +238,7 @@ void RemoteControl::handleButton(int buttonCode)
             break;
     }
 
+    qDebug() << json;
+
     m_connection->send(QJsonDocument(json));
-}
-
-QWidget* RemoteControl::handleQuit()
-{
-    QWidget *quitWidget = new QWidget();
-    quitGrid            = new QGridLayout();
-
-    confirmMsg   = new QLabel(tr("Are you sure you wish to quit?"));
-    cancelButton = new QPushButton("Cancel");
-    quitButton   = new QPushButton("Ok");
-
-    cancelButton->setFixedWidth(100);
-    quitButton->setFixedWidth(100);
-
-    quitGrid->setHorizontalSpacing(4);
-    quitGrid->setVerticalSpacing(8);
-
-    quitGrid->setColumnMinimumWidth(0, 50);
-    quitGrid->setColumnMinimumWidth(2, 20);
-    quitGrid->setColumnMinimumWidth(4, 50);
-
-    quitGrid->addWidget(confirmMsg,   0, 1, 1, 3, Qt::AlignCenter); //row col rowSpan colSpan
-    quitGrid->addWidget(cancelButton, 1, 1, 1, 1, Qt::AlignCenter);
-    quitGrid->addWidget(quitButton,   1, 3, 1, 1, Qt::AlignCenter);
-
-    connect(quitButton,   &QPushButton::clicked, this, &QApplication::quit);
-    connect(cancelButton, &QPushButton::clicked, this, [this]{
-        tabs->setCurrentIndex(0);
-    });
-
-    quitWidget->setLayout(quitGrid);
-
-    return quitWidget;
 }
