@@ -27,6 +27,6 @@ private:
     QUrl          m_url;
     QJsonDocument m_jsonDoc;
     bool m_debug;
-}; // 127m5@^Q3qNf
+};
 
 #endif // CONNECTION_H
