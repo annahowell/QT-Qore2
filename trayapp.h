@@ -20,7 +20,6 @@ public slots:
     void toggleVisibility();
 
 protected:
-    bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
     Settings        *settings;
@@ -28,6 +27,9 @@ private:
     RemoteControl   *remoteControl;
     MainWindow      *mainWindow;
     bool             opened;
+
+    QWidget* handleQuit();
 };
+
 
 #endif // TRAYAPP_H

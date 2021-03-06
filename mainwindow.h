@@ -14,14 +14,18 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(RemoteControl *remoteControl, Settings *settings);
+    MainWindow(RemoteControl *remoteControl, Settings *settings, QWidget *quit);
+    void setTab(int index);
+    QWidget* handleQuit();
 
 protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
+    QTabWidget    *tabs;
     RemoteControl *m_remoteControl;
     Settings      *m_settings;
+    QWidget       *m_quit;
 
     void handleTabChanged(int index);
 };

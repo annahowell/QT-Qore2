@@ -3,25 +3,28 @@
 
 #include <QtWidgets>
 #include <QHotkey>
+#include <QShortcut>
 #include "connection.h"
 
-#define PREVIOUS     1
-#define REWIND       2
-#define STOP         3
-#define PLAY_PAUSE   4
-#define FAST_FORWARD 5
-#define NEXT         6
-#define MENU         7
-#define CONTEXT      8
-#define INFO         9
-#define BACK         10
-#define UP           11
-#define DOWN         12
-#define LEFT         13
-#define RIGHT        14
-#define ENTER        15
-#define VOLUME_UP    16
-#define VOLUME_DOWN  17
+#define PREVIOUS         1
+#define BIG_STEP_BACK    2
+#define REWIND           3
+#define STOP             4
+#define PLAY_PAUSE       5
+#define FAST_FORWARD     6
+#define BIG_STEP_FORWARD 7
+#define NEXT             8
+#define MENU             9
+#define CONTEXT          10
+#define INFO             11
+#define BACK             12
+#define UP               13
+#define DOWN             14
+#define LEFT             15
+#define RIGHT            16
+#define ENTER            17
+#define VOLUME_UP        18
+#define VOLUME_DOWN      19
 
 
 class RemoteControl : public QWidget
@@ -46,7 +49,7 @@ private:
     void setUpLayout();
 
 private slots:
-    void handleButton(int buttonCode);
+    void handleRemote(int code);
 };
 
 #endif // REMOTECONTROL_H

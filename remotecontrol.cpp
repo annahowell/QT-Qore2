@@ -37,7 +37,7 @@ void RemoteControl::createWidgets()
             << up       << down     << left       << right
             << enter    << volumeUp << volumeLogo << volumeDown;
 
-    signalMapper = new QSignalMapper(this);
+    signalMapper = new QSignalMapper();
 
     for(auto& button : buttons)
     {
@@ -53,6 +53,11 @@ void RemoteControl::createWidgets()
 
 void RemoteControl::setShortcuts()
 {
+    QShortcut *bigStepBackward = new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Down), this);
+    QShortcut *bigStepForward  = new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Up), this);
+    connect(bigStepBackward, SIGNAL(activated()), signalMapper, SLOT(map()));
+    connect(bigStepForward, SIGNAL(activated()), signalMapper, SLOT(map()));
+
     previous->setShortcut   (QKeySequence(Qt::Key_Minus));
     rewind->setShortcut     (QKeySequence(Qt::ShiftModifier + Qt::Key_Left));
     stop->setShortcut       (QKeySequence(Qt::Key_X));
@@ -75,28 +80,31 @@ void RemoteControl::setShortcuts()
     volumeDown->setShortcut (QKeySequence(Qt::Key_BracketLeft));
 
     // Set signal mapping for the buttons
-    signalMapper->setMapping(previous,    PREVIOUS);
-    signalMapper->setMapping(rewind,      REWIND);
-    signalMapper->setMapping(stop,        STOP);
-    signalMapper->setMapping(playPause,   PLAY_PAUSE);
-    signalMapper->setMapping(fastForward, FAST_FORWARD);
-    signalMapper->setMapping(next,        NEXT);
+    signalMapper->setMapping(previous,        PREVIOUS);
+    signalMapper->setMapping(bigStepBackward, BIG_STEP_BACK);
+    signalMapper->setMapping(rewind,          REWIND);
+    signalMapper->setMapping(stop,            STOP);
+    signalMapper->setMapping(playPause,       PLAY_PAUSE);
+    signalMapper->setMapping(fastForward,     FAST_FORWARD);
+    signalMapper->setMapping(bigStepForward,  BIG_STEP_FORWARD);
+    signalMapper->setMapping(next,            NEXT);
 
-    signalMapper->setMapping(menu,        MENU);
-    signalMapper->setMapping(context,     CONTEXT);
-    signalMapper->setMapping(info,        INFO);
-    signalMapper->setMapping(back,        BACK);
+    signalMapper->setMapping(menu,            MENU);
+    signalMapper->setMapping(context,         CONTEXT);
+    signalMapper->setMapping(info,            INFO);
+    signalMapper->setMapping(back,            BACK);
 
-    signalMapper->setMapping(up,          UP);
-    signalMapper->setMapping(down,        DOWN);
-    signalMapper->setMapping(left,        LEFT);
-    signalMapper->setMapping(right,       RIGHT);
-    signalMapper->setMapping(enter,       ENTER);
+    signalMapper->setMapping(up,              UP);
+    signalMapper->setMapping(down,            DOWN);
+    signalMapper->setMapping(left,            LEFT);
+    signalMapper->setMapping(right,           RIGHT);
+    signalMapper->setMapping(enter,           ENTER);
 
-    signalMapper->setMapping(volumeUp,    VOLUME_UP);
-    signalMapper->setMapping(volumeDown,  VOLUME_DOWN);
+    signalMapper->setMapping(volumeUp,        VOLUME_UP);
+    signalMapper->setMapping(volumeDown,      VOLUME_DOWN);
 
-    connect(signalMapper, SIGNAL(mapped(int)), this, SLOT(handleButton(int)));
+
+    connect(signalMapper, &QSignalMapper::mappedInt, this, &RemoteControl::handleRemote);
 }
 
 
@@ -137,7 +145,7 @@ void RemoteControl::setUpLayout()
     setLayout(grid);
 }
 
-void RemoteControl::handleButton(int buttonCode)
+void RemoteControl::handleRemote(int code)
 {
     QJsonObject action;
     QJsonObject json
@@ -146,10 +154,16 @@ void RemoteControl::handleButton(int buttonCode)
         {"id", "1"}
     };
 
-    switch (buttonCode) {
+    switch (code) {
         case PREVIOUS:
             json.insert("method", "Input.ExecuteAction");
             action.insert("action", "skipprevious");
+            json.insert("params", action);
+            break;
+
+        case BIG_STEP_BACK:
+            json.insert("method", "Input.ExecuteAction");
+            action.insert("action", "bigstepback");
             json.insert("params", action);
             break;
 
@@ -174,6 +188,12 @@ void RemoteControl::handleButton(int buttonCode)
         case FAST_FORWARD:
             json.insert("method", "Input.ExecuteAction");
             action.insert("action", "stepforward");
+            json.insert("params", action);
+            break;
+
+        case BIG_STEP_FORWARD:
+            json.insert("method", "Input.ExecuteAction");
+            action.insert("action", "bigstepforward");
             json.insert("params", action);
             break;
 
