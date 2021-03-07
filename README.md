@@ -11,7 +11,7 @@ Kodi remote written in Qt and created as a learning exercise. At present this in
 
 ![Remote](screenshots/remote.png)
 
-
+![Remote](screenshots/settings.png)
 
 
 
