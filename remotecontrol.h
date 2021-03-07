@@ -32,12 +32,18 @@ class RemoteControl : public QWidget
     Q_OBJECT
 
 public:
-    RemoteControl(Connection *connection);
+    RemoteControl(bool debug, Connection *connection);
+    bool getTextInputShouldBeOpen();
+    void openTextInput(bool updateShouldBeOpenBool);
+    void closeTextInput(bool updateShouldBeOpenBool);
 
 private:
+    bool                 m_debug, textInputShouldBeOpen;
     Connection          *m_connection;
     QSignalMapper       *signalMapper;
     QList<QPushButton*>  buttons;
+    QDialog             *textInputDialog;
+    QLineEdit           *textInput;
     QPushButton         *cancelButton, *quitButton;
     QPushButton         *previous, *rewind,   *stop,       *playPause, *fastForward, *next,
                         *menu,     *context,  *info,       *back,
@@ -47,9 +53,13 @@ private:
     void createWidgets();
     void setShortcuts();
     void setUpLayout();
+    void setUpTextInput();
 
 private slots:
     void handleRemote(int code);
+    void onTextMessageReceived(const QString &frame);
+    void sendText();
+    void cancelSendText();
 };
 
 #endif // REMOTECONTROL_H

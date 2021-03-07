@@ -1,7 +1,7 @@
 #include "settings.h"
 
-Settings::Settings(Connection *connection, QHotkey *hotkey, QSystemTrayIcon *trayIcon)
-    : m_connection(connection), m_hotkey(hotkey), m_trayIcon(trayIcon)
+Settings::Settings(bool debug, Connection *connection, QHotkey *hotkey, QSystemTrayIcon *trayIcon)
+    :  m_debug(debug), m_connection(connection), m_hotkey(hotkey), m_trayIcon(trayIcon)
 {
     settings = new QSettings;
 
@@ -50,10 +50,7 @@ void Settings::setupFromDisk()
     QString port = settings->value("port").toString();
 
     url.reserve(prefix.length() + ip.length() + seperator.length() + port.length());
-    url.append(prefix);
-    url.append(ip);
-    url.append(seperator);
-    url.append(port);
+    url.append(prefix).append(ip).append(seperator).append(port);
 
     m_connection->setUrl(url);
 
@@ -74,49 +71,51 @@ void Settings::createWidgets()
 {
     QGridLayout *grid = new QGridLayout;
 
-    ipLabel         = new QLabel(tr("IP:"));
-    portLabel       = new QLabel(tr("Port:"));
-    hotKeyLabel     = new QLabel(tr("Hotkey:"));
-    ipEdit          = new QLineEdit(settings->value("ip").toString());
-    portEdit        = new QLineEdit(settings->value("port").toString());
-    hotKeyEdit      = new QKeySequenceEdit(settings->value("hotkey").toString());
-    toggleMenuIcon  = new QPushButton(QString("Toggle Icon Colour"));
+    ipLabel       = new QLabel(tr("IP:"));
+    portLabel     = new QLabel(tr("Port:"));
+    hotKeyLabel   = new QLabel(tr("Hotkey:"));
+    ipEdit        = new QLineEdit(settings->value("ip").toString());
+    portEdit      = new QLineEdit(settings->value("port").toString());
+    hotKeyEdit    = new QKeySequenceEdit(settings->value("hotkey").toString());
+    toggleButton  = new QPushButton(QString(tr("Toggle Dark Theme Icon")));
 
-    ipEdit->setToolTip(QString("Set the IP address of the computer running Kodi"));
-    portEdit->setToolTip(QString("Set the websocket port. Kodi uses 9090 by default"));
-    hotKeyEdit->setToolTip(QString("Set the global hotkey for showing and hiding Qore2"));
+    ipEdit->setToolTip(QString(tr("Set the IP address of the computer running Kodi")));
+    portEdit->setToolTip(QString(tr("Set the websocket port. Kodi uses 9090 by default")));
+    hotKeyEdit->setToolTip(QString(tr("Set the global hotkey for showing and hiding Qore2")));
 
-    resetButton = new QPushButton("Defaults");
-    saveButton  = new QPushButton("Save");
+    resetButton = new QPushButton(tr("Defaults"));
+    saveButton  = new QPushButton(tr("Save"));
 
     grid->setColumnMinimumWidth (2, 90);
 
-    grid->addWidget(ipLabel,     0, 0, Qt::AlignRight | Qt::AlignVCenter);
-    grid->addWidget(ipEdit,      0, 1);
+    grid->addWidget(ipLabel,      0, 0, Qt::AlignRight | Qt::AlignVCenter);
+    grid->addWidget(portLabel,    1, 0, Qt::AlignRight | Qt::AlignVCenter);
+    grid->addWidget(hotKeyLabel,  0, 2, Qt::AlignRight | Qt::AlignVCenter);
 
-    grid->addWidget(hotKeyLabel, 0, 2, Qt::AlignRight | Qt::AlignVCenter);
-    grid->addWidget(hotKeyEdit,  0, 3, 1, 2);
+    grid->addWidget(ipEdit,       0, 1);
+    grid->addWidget(portEdit,     1, 1);
+    grid->addWidget(hotKeyEdit,   0, 3, 1, 2);
+    grid->addWidget(toggleButton, 3, 0, 1, 2, Qt::AlignBottom);
 
-    grid->addWidget(portLabel,   1, 0, Qt::AlignRight | Qt::AlignVCenter);
-    grid->addWidget(portEdit,    1, 1);
-
-    grid->addWidget(toggleMenuIcon, 3, 0, 1, 2, Qt::AlignBottom);
-
-    grid->addWidget(resetButton, 3, 3, Qt::AlignBottom);
-    grid->addWidget(saveButton,  3, 4, Qt::AlignBottom);
+    grid->addWidget(resetButton,  3, 3, Qt::AlignBottom);
+    grid->addWidget(saveButton,   3, 4, Qt::AlignBottom);
 
     setLayout(grid);
 
-    connect(toggleMenuIcon, &QPushButton::pressed, this, &Settings::toggleMenuIconColor);
-
+    connect(toggleButton, &QPushButton::pressed, this, &Settings::toggleMenuIconColor);
     connect(resetButton, &QPushButton::pressed, this, &Settings::resetSettings);
-    connect(saveButton,  &QPushButton::pressed, this, &Settings::saveSettings);
+    connect(saveButton, &QPushButton::pressed, this, &Settings::saveSettings);
 }
 
 
 void Settings::toggleMenuIconColor()
 {
+    if (m_debug) {qDebug() << "Toggling dark theme icon color from" << darkTheme << "to" << !darkTheme;}
+
+    // Since we want the icon to change when the button is pressed, it's better UX to save the state now incase the user
+    // doesn't click save because they've already seen the toggle button taking effect
     darkTheme = !darkTheme;
+    settings->setValue("darkTheme", darkTheme);
 
     m_trayIcon->setIcon(darkTheme ? QIcon(WHITE_ICON) : QIcon(BLACK_ICON));
 }
@@ -124,6 +123,8 @@ void Settings::toggleMenuIconColor()
 
 void Settings::resetSettings()
 {
+    if (m_debug) {qDebug() << "Performing settings reset";}
+
     setDefaults(true);  // True we're doing a reset
 
     setupFromDisk();
@@ -132,10 +133,11 @@ void Settings::resetSettings()
 
 void Settings::saveSettings()
 {
-    settings->setValue("ip",        ipEdit->displayText());
-    settings->setValue("port",      portEdit->displayText());
-    settings->setValue("hotkey",    hotKeyEdit->keySequence().toString());
-    settings->setValue("darkTheme", darkTheme);
+    if (m_debug) {qDebug() << "Saving settings";}
+
+    settings->setValue("ip", ipEdit->displayText());
+    settings->setValue("port", portEdit->displayText());
+    settings->setValue("hotkey", hotKeyEdit->keySequence().toString());
 
     setupFromDisk();
 }

@@ -13,7 +13,7 @@ class Settings : public QWidget
     Q_OBJECT
 
 public:
-    Settings(Connection *connection, QHotkey *hotkey, QSystemTrayIcon *trayIcon);
+    Settings(bool debug, Connection *connection, QHotkey *hotkey, QSystemTrayIcon *trayIcon);
 
 
 private slots:
@@ -22,15 +22,15 @@ private slots:
     void saveSettings();
 
 private:
+    bool              darkTheme, m_debug;
     Connection       *m_connection;
     QLabel           *ipLabel, *portLabel, *hotKeyLabel;
     QLineEdit        *ipEdit, *portEdit;
     QKeySequenceEdit *hotKeyEdit;
     QSettings        *settings;
-    QPushButton      *toggleMenuIcon, *saveButton, *resetButton;
+    QPushButton      *toggleButton, *saveButton, *resetButton;
     QHotkey          *m_hotkey;
     QSystemTrayIcon  *m_trayIcon;
-    bool              darkTheme;
 
     void setDefaults(bool doReset);
     void setupFromDisk();

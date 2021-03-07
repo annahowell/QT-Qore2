@@ -16,11 +16,6 @@ class TrayApp : public QObject
 public:
     TrayApp();
 
-public slots:
-    void toggleVisibility();
-
-protected:
-
 private:
     Settings        *settings;
     Connection      *connection;
@@ -29,6 +24,9 @@ private:
     bool             opened;
 
     QWidget* handleQuit();
+
+private slots:
+    void toggleVisibility();
 };
 
 

@@ -1,11 +1,17 @@
 #include "remotecontrol.h"
 
-RemoteControl::RemoteControl(Connection *connection)
-    : m_connection(connection)
+RemoteControl::RemoteControl(bool debug, Connection *connection)
+    : m_debug(debug), m_connection(connection)
 {
+    textInputShouldBeOpen = false;
+
     createWidgets();
     setShortcuts();
     setUpLayout();
+    setUpTextInput();
+
+
+    connect(m_connection, &QWebSocket::textMessageReceived, this, &RemoteControl::onTextMessageReceived);
 }
 
 void RemoteControl::createWidgets()
@@ -55,8 +61,9 @@ void RemoteControl::setShortcuts()
 {
     QShortcut *bigStepBackward = new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Down), this);
     QShortcut *bigStepForward  = new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Up), this);
+
     connect(bigStepBackward, SIGNAL(activated()), signalMapper, SLOT(map()));
-    connect(bigStepForward, SIGNAL(activated()), signalMapper, SLOT(map()));
+    connect(bigStepForward,  SIGNAL(activated()), signalMapper, SLOT(map()));
 
     previous->setShortcut   (QKeySequence(Qt::Key_Minus));
     rewind->setShortcut     (QKeySequence(Qt::ShiftModifier + Qt::Key_Left));
@@ -145,11 +152,25 @@ void RemoteControl::setUpLayout()
     setLayout(grid);
 }
 
+void RemoteControl::setUpTextInput()
+{
+    textInputDialog = new QDialog(this, Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+    textInputDialog->setFixedSize(400, 60);
+
+    QVBoxLayout *textInputLayout = new QVBoxLayout();
+    textInput = new QLineEdit();
+    textInputLayout->addWidget(textInput);
+
+    textInputDialog->setLayout(textInputLayout);
+
+    connect(textInput, &QLineEdit::returnPressed, this, &RemoteControl::sendText);
+    connect(textInputDialog, &QDialog::rejected, this, &RemoteControl::cancelSendText);
+}
+
 void RemoteControl::handleRemote(int code)
 {
-    QJsonObject action;
-    QJsonObject json
-    {
+    QJsonObject params;
+    QJsonObject json {
         {"jsonrpc", "2.0"},
         {"id", "1"}
     };
@@ -157,50 +178,50 @@ void RemoteControl::handleRemote(int code)
     switch (code) {
         case PREVIOUS:
             json.insert("method", "Input.ExecuteAction");
-            action.insert("action", "skipprevious");
-            json.insert("params", action);
+            params.insert("action", "skipprevious");
+            json.insert("params", params);
             break;
 
         case BIG_STEP_BACK:
             json.insert("method", "Input.ExecuteAction");
-            action.insert("action", "bigstepback");
-            json.insert("params", action);
+            params.insert("action", "bigstepback");
+            json.insert("params", params);
             break;
 
         case REWIND:
             json.insert("method", "Input.ExecuteAction");
-            action.insert("action", "stepback");
-            json.insert("params", action);
+            params.insert("action", "stepback");
+            json.insert("params", params);
             break;
 
         case STOP:
             json.insert("method", "Input.ExecuteAction");
-            action.insert("action", "stop");
-            json.insert("params", action);
+            params.insert("action", "stop");
+            json.insert("params", params);
             break;
 
         case PLAY_PAUSE:
             json.insert("method", "Input.ExecuteAction");
-            action.insert("action", "pause");
-            json.insert("params", action);
+            params.insert("action", "pause");
+            json.insert("params", params);
             break;
 
         case FAST_FORWARD:
             json.insert("method", "Input.ExecuteAction");
-            action.insert("action", "stepforward");
-            json.insert("params", action);
+            params.insert("action", "stepforward");
+            json.insert("params", params);
             break;
 
         case BIG_STEP_FORWARD:
             json.insert("method", "Input.ExecuteAction");
-            action.insert("action", "bigstepforward");
-            json.insert("params", action);
+            params.insert("action", "bigstepforward");
+            json.insert("params", params);
             break;
 
         case NEXT:
             json.insert("method", "Input.ExecuteAction");
-            action.insert("action", "skipnext");
-            json.insert("params", action);
+            params.insert("action", "skipnext");
+            json.insert("params", params);
             break;
 
         case MENU:
@@ -209,8 +230,8 @@ void RemoteControl::handleRemote(int code)
 
         case CONTEXT:
             json.insert("method", "Input.ExecuteAction");
-            action.insert("action", "contextmenu");
-            json.insert("params", action);
+            params.insert("action", "contextmenu");
+            json.insert("params", params);
             break;
 
         case INFO:
@@ -243,14 +264,14 @@ void RemoteControl::handleRemote(int code)
 
         case VOLUME_DOWN:
             json.insert("method", "Input.ExecuteAction");
-            action.insert("action", "volumedown");
-            json.insert("params", action);
+            params.insert("action", "volumedown");
+            json.insert("params", params);
             break;
 
         case VOLUME_UP:
             json.insert("method", "Input.ExecuteAction");
-            action.insert("action", "volumeup");
-            json.insert("params", action);
+            params.insert("action", "volumeup");
+            json.insert("params", params);
             break;
 
         default:
@@ -258,7 +279,84 @@ void RemoteControl::handleRemote(int code)
             break;
     }
 
-    qDebug() << json;
+    m_connection->send(QJsonDocument(json));
+}
+
+
+bool RemoteControl::getTextInputShouldBeOpen()
+{
+    return textInputShouldBeOpen;
+}
+
+
+void RemoteControl::onTextMessageReceived(const QString &frame)
+{
+    if (m_debug) {qDebug() << "Received message: " << frame;}
+
+    QJsonObject jsonObject = QJsonDocument::fromJson(frame.toUtf8()).object();
+    QString method = jsonObject.value("method").toString();
+
+    // If the method wants an input
+    if (QString::compare(method, "Input.OnInputRequested", Qt::CaseInsensitive) == 0) {
+        textInputDialog->close();
+
+        // The string we're after is value, which is inside data, which in turn is inside params
+        QString currentText = jsonObject.value("params").toObject().value("data").toObject().value("value").toString();
+
+        if (m_debug) {qDebug() << "Received text input request to amend:" << currentText;}
+
+        textInput->setText(currentText);
+        openTextInput(true);
+    }
+}
+
+
+void RemoteControl::sendText()
+{
+    QJsonObject params {
+        {"text", textInput->displayText()}
+    };
+
+    QJsonObject json {
+        {"jsonrpc", "2.0"},
+        {"method", "Input.SendText"},
+        {"params", params},
+        {"id", "1"}
+    };
 
     m_connection->send(QJsonDocument(json));
+
+    closeTextInput(true);
+}
+
+
+void RemoteControl::openTextInput(bool updateShouldBeOpenBool)
+{
+    textInputShouldBeOpen = updateShouldBeOpenBool ? true : textInputShouldBeOpen;
+
+    textInputDialog->show();
+    textInputDialog->activateWindow();
+    textInputDialog->raise();
+
+    textInput->setFocus();
+}
+
+
+void RemoteControl::closeTextInput(bool updateShouldBeOpenBool)
+{
+    textInputDialog->hide();
+
+    if (updateShouldBeOpenBool) {
+        textInput->setText("");
+        textInputShouldBeOpen = false;
+    }
+}
+
+
+void RemoteControl::cancelSendText()
+{
+    // If the user has canceled we'll send Input.Back to the API to close the Kodi window and close the text input popup
+    handleRemote(BACK);
+
+    closeTextInput(true);
 }

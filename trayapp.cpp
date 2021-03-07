@@ -2,19 +2,21 @@
 
 TrayApp::TrayApp()
 {
-    // When the app starts, we don't show it
+    bool debug = true;
+
+    // When the app starts we don't show the remote; the user has to either click the menu icon or use the global hotkey
     opened = false;
 
     // Create empty hotkey and system icon, Settings will actually set the shortcut and icon
-    QHotkey           *hotkey = new QHotkey();
+    QHotkey *hotkey = new QHotkey();
     QSystemTrayIcon *trayIcon = new QSystemTrayIcon();
 
     connect(hotkey, &QHotkey::activated, this, &TrayApp::toggleVisibility);
     connect(trayIcon, &QSystemTrayIcon::activated, this, &TrayApp::toggleVisibility);
 
-    connection    = new Connection(true);
-    settings      = new Settings(connection, hotkey, trayIcon);
-    remoteControl = new RemoteControl(connection);
+    connection    = new Connection(debug);
+    settings      = new Settings(debug, connection, hotkey, trayIcon);
+    remoteControl = new RemoteControl(debug, connection);
 }
 
 
@@ -23,6 +25,9 @@ void TrayApp::toggleVisibility()
     if (opened){
         opened = false;
 
+        if (remoteControl->getTextInputShouldBeOpen()) {
+            remoteControl->closeTextInput(false);
+        }
         mainWindow->close();
     } else {
         opened = true;
@@ -31,12 +36,16 @@ void TrayApp::toggleVisibility()
 
         // Drawer is good, opens to another screen and focuses etc with raise() but has a border
         // tooltip is good, ooens to another screen and focuses etc with raise() and has no border
-        mainWindow->setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint);
+        mainWindow->setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
 
         mainWindow->show();
         mainWindow->setFocus();
         mainWindow->activateWindow();
         mainWindow->raise();
+
+        if (remoteControl->getTextInputShouldBeOpen()) {
+            remoteControl->openTextInput(false); // False we're not done, so don't alter the textInputShouldBeOpen bool
+        }
     }
 }
 
@@ -46,8 +55,8 @@ QWidget* TrayApp::handleQuit()
     QWidget *quitWidget       = new QWidget();
     QGridLayout *grid         = new QGridLayout();
     QLabel *confirmMsg        = new QLabel(tr("Are you sure you wish to quit?"));
-    QPushButton *cancelButton = new QPushButton("Cancel");
-    QPushButton *quitButton   = new QPushButton("Ok");
+    QPushButton *cancelButton = new QPushButton(tr("Cancel"));
+    QPushButton *quitButton   = new QPushButton(tr("Ok"));
 
     cancelButton->setFixedWidth(100);
     quitButton->setFixedWidth(100);
