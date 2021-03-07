@@ -17,7 +17,7 @@ void Settings::setDefaults(bool doReset)
 {
     // Set defaults if either they params don't exist or we're reseeting to defaults
     if (!settings->contains("ip") || doReset) {
-        settings->setValue("ip",    "127.0.0.1");
+        settings->setValue("ip",    "192.168.9.201");
     }
 
     if (!settings->contains("port") || doReset) {

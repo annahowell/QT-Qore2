@@ -1,15 +1,14 @@
 # qore2
-Kodi remote written in Qt and created as a learning exercise. At present this in unfinished and the settings tab is purely cosmetic.
+Kodi remote written in Qt. 
 
 ## Compiling and Configuration
 
-1. Open qore2.pro file in Qt Creator.
-2. Amend line 6 of connection.cpp to reflect your kodi config
+1. Open Qore2.pro file in Qt Creator compiling for Qt 5.15 LTS.
 3. Compile
 
 ## Screenshots
 
-![Remote](screenshots/remote.png)
+![Remote](screenshots/remote.png)   
 
 ![Remote](screenshots/settings.png)
 
