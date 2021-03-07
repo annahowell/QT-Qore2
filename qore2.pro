@@ -6,6 +6,7 @@
 
 include(vendor/vendor.pri)
 
+
 QT       += core gui
 QT       += network
 QT       += widgets
@@ -15,10 +16,17 @@ CONFIG   += C++11
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET    = qore2
+TARGET    = Qore2
 TEMPLATE  = app
 
-LIBS += -framework AppKit
+RC_ICONS  = Qore2.ico
+ICON      = Qore2.icns
+
+HEADERS  += mainwindow.h \
+            connection.h \
+            remotecontrol.h \
+            settings.h \
+            trayapp.h
 
 SOURCES  += main.cpp\
             mainwindow.cpp \
@@ -26,12 +34,6 @@ SOURCES  += main.cpp\
             remotecontrol.cpp \
             settings.cpp \
             trayapp.cpp
-
-HEADERS  += mainwindow.h \
-            connection.h \
-            remotecontrol.h \
-            settings.h \
-            trayapp.h
 
 RESOURCES += \
     resources.qrc

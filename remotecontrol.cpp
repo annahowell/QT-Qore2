@@ -10,7 +10,6 @@ RemoteControl::RemoteControl(bool debug, Connection *connection)
     setUpLayout();
     setUpTextInput();
 
-
     connect(m_connection, &QWebSocket::textMessageReceived, this, &RemoteControl::onTextMessageReceived);
 }
 
@@ -49,10 +48,11 @@ void RemoteControl::createWidgets()
     {
       button->setFixedSize(QSize(42, 40));
       button->setFlat(false);
+
       connect(button, SIGNAL(clicked()), signalMapper, SLOT(map()));
     }
 
-    // Volume logo is actually a hacky disabled button
+    // Volume logo is just a hacky disabled button
     volumeLogo->setEnabled(false);
 }
 
@@ -109,7 +109,6 @@ void RemoteControl::setShortcuts()
 
     signalMapper->setMapping(volumeUp,        VOLUME_UP);
     signalMapper->setMapping(volumeDown,      VOLUME_DOWN);
-
 
     connect(signalMapper, &QSignalMapper::mappedInt, this, &RemoteControl::handleRemote);
 }

@@ -13,12 +13,12 @@ void Connection::setUrl(QString url)
     // We're changing the url, so if the connection is open we should close it and let it attempt to reconnect next time
     // the remote is used
     if (isValid()) {
-        if (m_debug) {qDebug() << tr("Closing WebSocket");}
+        if (m_debug) {qDebug() << "Closing WebSocket";}
 
         close();
     }
 
-    if (m_debug) {qDebug() << tr("Setting WebSocket to: ") << url;}
+    if (m_debug) {qDebug() << "Setting WebSocket to:" << url;}
 
     m_url = QUrl(url);
 }
@@ -26,6 +26,8 @@ void Connection::setUrl(QString url)
 
 void Connection::send(QJsonDocument jsonDoc)
 {
+    if (m_debug) {qDebug() << "Sending:" << jsonDoc;}
+
     jsonAsByteArray = jsonDoc.toJson();
 
     if (isValid()) {
@@ -38,7 +40,7 @@ void Connection::send(QJsonDocument jsonDoc)
 
 void Connection::onConnected()
 {
-    if (m_debug) {qDebug() << tr("WebSocket connected");}
+    if (m_debug) {qDebug() << "WebSocket connected";}
 
     sendTextMessage(jsonAsByteArray);
 }
@@ -46,5 +48,5 @@ void Connection::onConnected()
 
 void Connection::onDisconnected()
 {
-    if (m_debug) {qDebug() << tr("WebSocket disconnected");}
+    if (m_debug) {qDebug() << "WebSocket disconnected";}
 }

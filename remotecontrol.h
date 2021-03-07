@@ -55,7 +55,7 @@ private:
     void setUpLayout();
     void setUpTextInput();
 
-private slots:
+public slots:
     void handleRemote(int code);
     void onTextMessageReceived(const QString &frame);
     void sendText();
