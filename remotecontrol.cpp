@@ -155,8 +155,7 @@ void RemoteControl::setUpTextInput()
 
     textInputDialog->setLayout(textInputLayout);
 
-    connect(textInput, &QLineEdit::textEdited, this, &RemoteControl::sendText);
-    connect(textInput, &QLineEdit::returnPressed, [this] { closeTextInput(true); });
+    connect(textInput, &QLineEdit::returnPressed, this, &RemoteControl::sendText);
     connect(textInputDialog, &QDialog::rejected, this, &RemoteControl::cancelSendText);
 }
 
@@ -166,47 +165,40 @@ void RemoteControl::handleRemote(int code)
     QJsonObject params;
     QJsonObject json {
         {"jsonrpc", "2.0"},
-        {"id", "1"}
+        {"id", "1"},
+        {"method", "Input.ExecuteAction"} // Method may get overwritten below
     };
 
     switch (code) {
         case PREVIOUS:
-            json.insert("method", "Input.ExecuteAction");
             params.insert("action", "skipprevious");
             break;
 
         case BIG_STEP_BACK:
-            json.insert("method", "Input.ExecuteAction");
             params.insert("action", "bigstepback");
             break;
 
         case REWIND:
-            json.insert("method", "Input.ExecuteAction");
             params.insert("action", "stepback");
             break;
 
         case STOP:
-            json.insert("method", "Input.ExecuteAction");
             params.insert("action", "stop");
             break;
 
         case PLAY_PAUSE:
-            json.insert("method", "Input.ExecuteAction");
             params.insert("action", "pause");
             break;
 
         case FAST_FORWARD:
-            json.insert("method", "Input.ExecuteAction");
             params.insert("action", "stepforward");
             break;
 
         case BIG_STEP_FORWARD:
-            json.insert("method", "Input.ExecuteAction");
             params.insert("action", "bigstepforward");
             break;
 
         case NEXT:
-            json.insert("method", "Input.ExecuteAction");
             params.insert("action", "skipnext");
             break;
 
@@ -215,7 +207,6 @@ void RemoteControl::handleRemote(int code)
             break;
 
         case CONTEXT:
-            json.insert("method", "Input.ExecuteAction");
             params.insert("action", "contextmenu");
             break;
 
@@ -248,17 +239,11 @@ void RemoteControl::handleRemote(int code)
             break;
 
         case VOLUME_DOWN:
-            json.insert("method", "Input.ExecuteAction");
             params.insert("action", "volumedown");
             break;
 
         case VOLUME_UP:
-            json.insert("method", "Input.ExecuteAction");
             params.insert("action", "volumeup");
-            break;
-
-        default:
-            json.insert("method", "Input.noop");
             break;
     }
 
@@ -312,7 +297,7 @@ void RemoteControl::sendText()
 
     m_connection->send(QJsonDocument(json));
 
-    //closeTextInput(true);
+    closeTextInput(true);
 }
 
 
