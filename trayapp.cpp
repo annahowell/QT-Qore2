@@ -2,7 +2,7 @@
 
 TrayApp::TrayApp()
 {
-    bool debug = true;
+    debug = true;
 
     // When the app starts we don't show the remote; the user has to either click the menu icon or use the global hotkey
     opened = false;
@@ -32,7 +32,7 @@ void TrayApp::toggleVisibility()
     } else {
         opened = true;
 
-        mainWindow = new MainWindow(remoteControl, settings, handleQuit());
+        mainWindow = new MainWindow(debug, remoteControl, settings, handleQuit());
 
         // Drawer is good, opens to another screen and focuses etc with raise() but has a border
         // tooltip is good, ooens to another screen and focuses etc with raise() and has no border

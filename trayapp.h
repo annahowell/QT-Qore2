@@ -21,7 +21,7 @@ private:
     Connection      *connection;
     RemoteControl   *remoteControl;
     MainWindow      *mainWindow;
-    bool             opened;
+    bool             debug, opened;
 
     QWidget* handleQuit();
 

@@ -40,7 +40,6 @@ public:
 private:
     bool                 m_debug, textInputShouldBeOpen;
     Connection          *m_connection;
-    QSignalMapper       *signalMapper;
     QList<QPushButton*>  buttons;
     QDialog             *textInputDialog;
     QLineEdit           *textInput;
@@ -51,7 +50,7 @@ private:
                         *enter,    *volumeUp, *volumeLogo, *volumeDown;
 
     void createWidgets();
-    void setShortcuts();
+    void setShortcutsAndBindings();
     void setUpLayout();
     void setUpTextInput();
 

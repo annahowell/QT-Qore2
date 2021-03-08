@@ -6,12 +6,13 @@ RemoteControl::RemoteControl(bool debug, Connection *connection)
     textInputShouldBeOpen = false;
 
     createWidgets();
-    setShortcuts();
+    setShortcutsAndBindings();
     setUpLayout();
     setUpTextInput();
 
     connect(m_connection, &QWebSocket::textMessageReceived, this, &RemoteControl::onTextMessageReceived);
 }
+
 
 void RemoteControl::createWidgets()
 {
@@ -37,19 +38,15 @@ void RemoteControl::createWidgets()
     volumeLogo  = new QPushButton(style()->standardIcon(QStyle::SP_MediaVolume), QString());
     volumeDown  = new QPushButton(QChar(0x2212));
 
-    buttons << previous << rewind << stop         << next << playPause << fastForward
-            << menu     << context  << info       << back
-            << up       << down     << left       << right
-            << enter    << volumeUp << volumeLogo << volumeDown;
-
-    signalMapper = new QSignalMapper();
+    buttons << previous    << rewind     << stop       << next  << playPause
+            << fastForward << menu       << context    << info  << back
+            << up          << down       << left       << right << enter
+            << volumeUp    << volumeLogo << volumeDown;
 
     for(auto& button : buttons)
     {
       button->setFixedSize(QSize(42, 40));
       button->setFlat(false);
-
-      connect(button, SIGNAL(clicked()), signalMapper, SLOT(map()));
     }
 
     // Volume logo is just a hacky disabled button
@@ -57,13 +54,10 @@ void RemoteControl::createWidgets()
 }
 
 
-void RemoteControl::setShortcuts()
+void RemoteControl::setShortcutsAndBindings()
 {
-    QShortcut *bigStepBackward = new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Down), this);
+    QShortcut *bigStepBack     = new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Down), this);
     QShortcut *bigStepForward  = new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Up), this);
-
-    connect(bigStepBackward, SIGNAL(activated()), signalMapper, SLOT(map()));
-    connect(bigStepForward,  SIGNAL(activated()), signalMapper, SLOT(map()));
 
     previous->setShortcut   (QKeySequence(Qt::Key_Minus));
     rewind->setShortcut     (QKeySequence(Qt::ShiftModifier + Qt::Key_Left));
@@ -87,30 +81,28 @@ void RemoteControl::setShortcuts()
     volumeDown->setShortcut (QKeySequence(Qt::Key_BracketLeft));
 
     // Set signal mapping for the buttons
-    signalMapper->setMapping(previous,        PREVIOUS);
-    signalMapper->setMapping(bigStepBackward, BIG_STEP_BACK);
-    signalMapper->setMapping(rewind,          REWIND);
-    signalMapper->setMapping(stop,            STOP);
-    signalMapper->setMapping(playPause,       PLAY_PAUSE);
-    signalMapper->setMapping(fastForward,     FAST_FORWARD);
-    signalMapper->setMapping(bigStepForward,  BIG_STEP_FORWARD);
-    signalMapper->setMapping(next,            NEXT);
+    connect(previous,       &QPushButton::clicked, m_connection, [this] { handleRemote(PREVIOUS); });
+    connect(bigStepBack,    &QShortcut::activated, m_connection, [this] { handleRemote(BIG_STEP_BACK); });
+    connect(rewind,         &QPushButton::clicked, m_connection, [this] { handleRemote(REWIND); });
+    connect(stop,           &QPushButton::clicked, m_connection, [this] { handleRemote(STOP); });
+    connect(playPause,      &QPushButton::clicked, m_connection, [this] { handleRemote(PLAY_PAUSE); });
+    connect(fastForward,    &QPushButton::clicked, m_connection, [this] { handleRemote(FAST_FORWARD); });
+    connect(bigStepForward, &QShortcut::activated, m_connection, [this] { handleRemote(BIG_STEP_FORWARD); });
+    connect(next,           &QPushButton::clicked, m_connection, [this] { handleRemote(NEXT); });
 
-    signalMapper->setMapping(menu,            MENU);
-    signalMapper->setMapping(context,         CONTEXT);
-    signalMapper->setMapping(info,            INFO);
-    signalMapper->setMapping(back,            BACK);
+    connect(menu,           &QPushButton::clicked, m_connection, [this] { handleRemote(MENU); });
+    connect(context,        &QPushButton::clicked, m_connection, [this] { handleRemote(CONTEXT); });
+    connect(info,           &QPushButton::clicked, m_connection, [this] { handleRemote(INFO); });
+    connect(back,           &QPushButton::clicked, m_connection, [this] { handleRemote(BACK); });
 
-    signalMapper->setMapping(up,              UP);
-    signalMapper->setMapping(down,            DOWN);
-    signalMapper->setMapping(left,            LEFT);
-    signalMapper->setMapping(right,           RIGHT);
-    signalMapper->setMapping(enter,           ENTER);
+    connect(up,             &QPushButton::clicked, m_connection, [this] { handleRemote(UP); });
+    connect(down,           &QPushButton::clicked, m_connection, [this] { handleRemote(DOWN); });
+    connect(left,           &QPushButton::clicked, m_connection, [this] { handleRemote(LEFT); });
+    connect(right,          &QPushButton::clicked, m_connection, [this] { handleRemote(RIGHT); });
+    connect(enter,          &QPushButton::clicked, m_connection, [this] { handleRemote(ENTER); });
 
-    signalMapper->setMapping(volumeUp,        VOLUME_UP);
-    signalMapper->setMapping(volumeDown,      VOLUME_DOWN);
-
-    connect(signalMapper, &QSignalMapper::mappedInt, this, &RemoteControl::handleRemote);
+    connect(volumeUp,       &QPushButton::clicked, m_connection, [this] { handleRemote(VOLUME_UP); });
+    connect(volumeDown,     &QPushButton::clicked, m_connection, [this] { handleRemote(VOLUME_DOWN); });
 }
 
 
@@ -151,6 +143,7 @@ void RemoteControl::setUpLayout()
     setLayout(grid);
 }
 
+
 void RemoteControl::setUpTextInput()
 {
     textInputDialog = new QDialog(this, Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
@@ -162,9 +155,11 @@ void RemoteControl::setUpTextInput()
 
     textInputDialog->setLayout(textInputLayout);
 
-    connect(textInput, &QLineEdit::returnPressed, this, &RemoteControl::sendText);
+    connect(textInput, &QLineEdit::textEdited, this, &RemoteControl::sendText);
+    connect(textInput, &QLineEdit::returnPressed, [this] { closeTextInput(true); });
     connect(textInputDialog, &QDialog::rejected, this, &RemoteControl::cancelSendText);
 }
+
 
 void RemoteControl::handleRemote(int code)
 {
@@ -178,49 +173,41 @@ void RemoteControl::handleRemote(int code)
         case PREVIOUS:
             json.insert("method", "Input.ExecuteAction");
             params.insert("action", "skipprevious");
-            json.insert("params", params);
             break;
 
         case BIG_STEP_BACK:
             json.insert("method", "Input.ExecuteAction");
             params.insert("action", "bigstepback");
-            json.insert("params", params);
             break;
 
         case REWIND:
             json.insert("method", "Input.ExecuteAction");
             params.insert("action", "stepback");
-            json.insert("params", params);
             break;
 
         case STOP:
             json.insert("method", "Input.ExecuteAction");
             params.insert("action", "stop");
-            json.insert("params", params);
             break;
 
         case PLAY_PAUSE:
             json.insert("method", "Input.ExecuteAction");
             params.insert("action", "pause");
-            json.insert("params", params);
             break;
 
         case FAST_FORWARD:
             json.insert("method", "Input.ExecuteAction");
             params.insert("action", "stepforward");
-            json.insert("params", params);
             break;
 
         case BIG_STEP_FORWARD:
             json.insert("method", "Input.ExecuteAction");
             params.insert("action", "bigstepforward");
-            json.insert("params", params);
             break;
 
         case NEXT:
             json.insert("method", "Input.ExecuteAction");
             params.insert("action", "skipnext");
-            json.insert("params", params);
             break;
 
         case MENU:
@@ -230,7 +217,6 @@ void RemoteControl::handleRemote(int code)
         case CONTEXT:
             json.insert("method", "Input.ExecuteAction");
             params.insert("action", "contextmenu");
-            json.insert("params", params);
             break;
 
         case INFO:
@@ -264,18 +250,20 @@ void RemoteControl::handleRemote(int code)
         case VOLUME_DOWN:
             json.insert("method", "Input.ExecuteAction");
             params.insert("action", "volumedown");
-            json.insert("params", params);
             break;
 
         case VOLUME_UP:
             json.insert("method", "Input.ExecuteAction");
             params.insert("action", "volumeup");
-            json.insert("params", params);
             break;
 
         default:
             json.insert("method", "Input.noop");
             break;
+    }
+
+    if (!params.empty()) {
+        json.insert("params", params);
     }
 
     m_connection->send(QJsonDocument(json));
@@ -312,20 +300,19 @@ void RemoteControl::onTextMessageReceived(const QString &frame)
 
 void RemoteControl::sendText()
 {
-    QJsonObject params {
-        {"text", textInput->displayText()}
-    };
-
     QJsonObject json {
         {"jsonrpc", "2.0"},
         {"method", "Input.SendText"},
-        {"params", params},
+        {"params", QJsonObject {
+                {"text", textInput->displayText()}
+            }
+        },
         {"id", "1"}
     };
 
     m_connection->send(QJsonDocument(json));
 
-    closeTextInput(true);
+    //closeTextInput(true);
 }
 
 
