@@ -77,7 +77,7 @@ void Settings::createWidgets()
     ipEdit        = new QLineEdit(settings->value("ip").toString());
     portEdit      = new QLineEdit(settings->value("port").toString());
     hotKeyEdit    = new QKeySequenceEdit(settings->value("hotkey").toString());
-    toggleButton  = new QPushButton(QString(tr("Toggle Dark Theme Icon")));
+    toggleButton  = new QPushButton(QString(tr("Toggle Dark Icon")));
 
     ipEdit->setToolTip(QString(tr("Set the IP address of the computer running Kodi")));
     portEdit->setToolTip(QString(tr("Set the websocket port. Kodi uses 9090 by default")));

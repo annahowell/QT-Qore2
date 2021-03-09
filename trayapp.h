@@ -17,13 +17,13 @@ public:
     TrayApp();
 
 private:
-    Settings        *settings;
-    Connection      *connection;
-    RemoteControl   *remoteControl;
-    MainWindow      *mainWindow;
-    bool             debug, opened;
+    bool           debug, opened;
+    Settings      *settings;
+    Connection    *connection;
+    RemoteControl *remoteControl;
+    MainWindow    *mainWindow;
 
-    QWidget* handleQuit();
+    QWidget *quitTabWidget();
 
 private slots:
     void toggleVisibility();

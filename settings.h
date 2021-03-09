@@ -15,7 +15,6 @@ class Settings : public QWidget
 public:
     Settings(bool debug, Connection *connection, QHotkey *hotkey, QSystemTrayIcon *trayIcon);
 
-
 private slots:
     void toggleMenuIconColor();
     void resetSettings();

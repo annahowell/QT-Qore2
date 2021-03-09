@@ -36,6 +36,7 @@ public:
     bool getTextInputShouldBeOpen();
     void openTextInput(bool updateShouldBeOpenBool);
     void closeTextInput(bool updateShouldBeOpenBool);
+    void sendText();
 
 private:
     bool                 m_debug, textInputShouldBeOpen;
@@ -54,10 +55,9 @@ private:
     void setUpLayout();
     void setUpTextInput();
 
-public slots:
+private slots:
     void handleRemote(int code);
     void onTextMessageReceived(const QString &frame);
-    void sendText();
     void cancelSendText();
 };
 

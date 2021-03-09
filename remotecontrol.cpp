@@ -166,7 +166,7 @@ void RemoteControl::handleRemote(int code)
     QJsonObject json {
         {"jsonrpc", "2.0"},
         {"id", "1"},
-        {"method", "Input.ExecuteAction"} // Method may get overwritten below
+        {"method", "Input.ExecuteAction"} // May get overwritten below
     };
 
     switch (code) {
@@ -272,7 +272,7 @@ void RemoteControl::onTextMessageReceived(const QString &frame)
     if (QString::compare(method, "Input.OnInputRequested", Qt::CaseInsensitive) == 0) {
         textInputDialog->close();
 
-        // The string we're after is value, which is inside data, which in turn is inside params
+        // The string we're after is 'value', which is inside 'data', which in turn is inside 'params'
         QString currentText = jsonObject.value("params").toObject().value("data").toObject().value("value").toString();
 
         if (m_debug) {qDebug() << "Received text input request to amend:" << currentText;}
