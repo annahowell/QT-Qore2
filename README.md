@@ -1,7 +1,9 @@
 # Qore2 - Kodi remote
 Kodi remote written in C++ using Qt 5. Qore2 is intended as a dropin replacement for [grantrutherford's](https://github.com/grantrutherford) excellent [MacOS dashboard remote](https://github.com/grantrutherford/kodi-remote-osx-widget) now that Apple have retired the MacOS dashboard.
 
-Qore2 supports menu navigation, volume control, info and context functions, previous, rewind, play/pause, fast forward, next and facilitates sending text input too. It runs in the menu bar/system tray and can be activated on a global hotkey or by clicking the icon. Configuration includes setting the WebSocket IP/host and port for Kodi, hotkey binding and dark or light mode icon. At present I have no plans to support customisable Kodi input bindings, sorry.
+Qore2 supports menu navigation, volume control, info and context functions, previous, rewind, play/pause, fast forward, next and facilitates sending text input too. It runs in the menu bar/system tray and can be activated on a global hotkey or by clicking the icon. 
+
+Configuration includes setting the WebSocket IP/host and port for Kodi, hotkey binding and dark or light mode icon. At present I have no plans to support customisable Kodi input bindings, sorry.
 
 
 ## Shorts
