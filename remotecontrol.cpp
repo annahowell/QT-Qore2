@@ -58,36 +58,41 @@ void RemoteControl::setShortcutsAndBindings()
 {
     QShortcut *bigStepBack     = new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Down), this);
     QShortcut *bigStepForward  = new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Up), this);
+    QShortcut *stepBack        = new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Left), this);
+    QShortcut *stepForward     = new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Right), this);
+    QShortcut *mute            = new QShortcut(Qt::Key_Backslash, this);
 
-    previous->setShortcut   (QKeySequence(Qt::Key_Minus));
-    rewind->setShortcut     (QKeySequence(Qt::ShiftModifier + Qt::Key_Left));
-    stop->setShortcut       (QKeySequence(Qt::Key_X));
-    playPause->setShortcut  (QKeySequence(Qt::Key_Space));
-    fastForward->setShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Right));
-    next->setShortcut       (QKeySequence(Qt::Key_Equal));
+    previous->setShortcut   (Qt::Key_Minus);
+    rewind->setShortcut     (Qt::Key_Comma);
+    stop->setShortcut       (Qt::Key_X);
+    playPause->setShortcut  (Qt::Key_Space);
+    fastForward->setShortcut(Qt::Key_Period);
+    next->setShortcut       (Qt::Key_Equal);
 
-    menu->setShortcut       (QKeySequence(Qt::Key_M));
-    context->setShortcut    (QKeySequence(Qt::Key_C));
-    info->setShortcut       (QKeySequence(Qt::Key_I));
-    back->setShortcut       (QKeySequence(Qt::Key_Backspace));
+    menu->setShortcut       (Qt::Key_M);
+    context->setShortcut    (Qt::Key_C);
+    info->setShortcut       (Qt::Key_I);
+    back->setShortcut       (Qt::Key_Backspace);
 
-    up->setShortcut         (QKeySequence(Qt::Key_Up));
-    down->setShortcut       (QKeySequence(Qt::Key_Down));
-    left->setShortcut       (QKeySequence(Qt::Key_Left));
-    right->setShortcut      (QKeySequence(Qt::Key_Right));
-    enter->setShortcut      (QKeySequence(Qt::Key_Return));
+    up->setShortcut         (Qt::Key_Up);
+    down->setShortcut       (Qt::Key_Down);
+    left->setShortcut       (Qt::Key_Left);
+    right->setShortcut      (Qt::Key_Right);
+    enter->setShortcut      (Qt::Key_Return);
 
-    volumeUp->setShortcut   (QKeySequence(Qt::Key_BracketRight));
-    volumeDown->setShortcut (QKeySequence(Qt::Key_BracketLeft));
+    volumeUp->setShortcut   (Qt::Key_BracketRight);
+    volumeDown->setShortcut (Qt::Key_BracketLeft);
 
     // Set signal mapping for the buttons
     connect(previous,       &QPushButton::clicked, m_connection, [this] { handleRemote(PREVIOUS); });
     connect(bigStepBack,    &QShortcut::activated, m_connection, [this] { handleRemote(BIG_STEP_BACK); });
+    connect(stepBack,       &QShortcut::activated, m_connection, [this] { handleRemote(STEP_BACK); });
     connect(rewind,         &QPushButton::clicked, m_connection, [this] { handleRemote(REWIND); });
     connect(stop,           &QPushButton::clicked, m_connection, [this] { handleRemote(STOP); });
     connect(playPause,      &QPushButton::clicked, m_connection, [this] { handleRemote(PLAY_PAUSE); });
     connect(fastForward,    &QPushButton::clicked, m_connection, [this] { handleRemote(FAST_FORWARD); });
     connect(bigStepForward, &QShortcut::activated, m_connection, [this] { handleRemote(BIG_STEP_FORWARD); });
+    connect(stepForward,    &QShortcut::activated, m_connection, [this] { handleRemote(STEP_FORWARD); });
     connect(next,           &QPushButton::clicked, m_connection, [this] { handleRemote(NEXT); });
 
     connect(menu,           &QPushButton::clicked, m_connection, [this] { handleRemote(MENU); });
@@ -103,6 +108,7 @@ void RemoteControl::setShortcutsAndBindings()
 
     connect(volumeUp,       &QPushButton::clicked, m_connection, [this] { handleRemote(VOLUME_UP); });
     connect(volumeDown,     &QPushButton::clicked, m_connection, [this] { handleRemote(VOLUME_DOWN); });
+    connect(mute,           &QShortcut::activated, m_connection, [this] { handleRemote(MUTE); });
 }
 
 
@@ -110,8 +116,8 @@ void RemoteControl::setUpLayout()
 {
     QGridLayout *grid = new QGridLayout();
 
-    grid->setColumnMinimumWidth (6,  10);
-    grid->setColumnMinimumWidth (10, 20);
+    grid->setColumnMinimumWidth(6,  10);
+    grid->setColumnMinimumWidth(10, 20);
 
     grid->setHorizontalSpacing(4);
     grid->setVerticalSpacing(8);
@@ -178,8 +184,12 @@ void RemoteControl::handleRemote(int code)
             params.insert("action", "bigstepback");
             break;
 
-        case REWIND:
+        case STEP_BACK:
             params.insert("action", "stepback");
+            break;
+
+        case REWIND:
+            params.insert("action", "rewind");
             break;
 
         case STOP:
@@ -191,6 +201,10 @@ void RemoteControl::handleRemote(int code)
             break;
 
         case FAST_FORWARD:
+            params.insert("action", "fastforward");
+            break;
+
+        case STEP_FORWARD:
             params.insert("action", "stepforward");
             break;
 
@@ -244,6 +258,10 @@ void RemoteControl::handleRemote(int code)
 
         case VOLUME_UP:
             params.insert("action", "volumeup");
+            break;
+
+        case MUTE:
+            params.insert("action", "mute");
             break;
     }
 
