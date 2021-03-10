@@ -84,31 +84,31 @@ void RemoteControl::setShortcutsAndBindings()
     volumeDown->setShortcut (Qt::Key_BracketLeft);
 
     // Set signal mapping for the buttons
-    connect(previous,       &QPushButton::clicked, m_connection, [this] { handleRemote(PREVIOUS); });
-    connect(bigStepBack,    &QShortcut::activated, m_connection, [this] { handleRemote(BIG_STEP_BACK); });
-    connect(stepBack,       &QShortcut::activated, m_connection, [this] { handleRemote(STEP_BACK); });
-    connect(rewind,         &QPushButton::clicked, m_connection, [this] { handleRemote(REWIND); });
-    connect(stop,           &QPushButton::clicked, m_connection, [this] { handleRemote(STOP); });
-    connect(playPause,      &QPushButton::clicked, m_connection, [this] { handleRemote(PLAY_PAUSE); });
-    connect(fastForward,    &QPushButton::clicked, m_connection, [this] { handleRemote(FAST_FORWARD); });
-    connect(bigStepForward, &QShortcut::activated, m_connection, [this] { handleRemote(BIG_STEP_FORWARD); });
-    connect(stepForward,    &QShortcut::activated, m_connection, [this] { handleRemote(STEP_FORWARD); });
-    connect(next,           &QPushButton::clicked, m_connection, [this] { handleRemote(NEXT); });
+    connect(previous,       &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("skipprevious"); });
+    connect(bigStepBack,    &QShortcut::activated, m_connection, [=] { m_connection->sendExecuteActionMethod("bigstepback"); });
+    connect(stepBack,       &QShortcut::activated, m_connection, [=] { m_connection->sendExecuteActionMethod("stepback"); });
+    connect(rewind,         &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("rewind"); });
+    connect(stop,           &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("stop"); });
+    connect(playPause,      &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("pause"); });
+    connect(fastForward,    &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("fastforward"); });
+    connect(bigStepForward, &QShortcut::activated, m_connection, [=] { m_connection->sendExecuteActionMethod("stepforward"); });
+    connect(stepForward,    &QShortcut::activated, m_connection, [=] { m_connection->sendExecuteActionMethod("bigstepforward"); });
+    connect(next,           &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("skipnext"); });
 
-    connect(menu,           &QPushButton::clicked, m_connection, [this] { handleRemote(MENU); });
-    connect(context,        &QPushButton::clicked, m_connection, [this] { handleRemote(CONTEXT); });
-    connect(info,           &QPushButton::clicked, m_connection, [this] { handleRemote(INFO); });
-    connect(back,           &QPushButton::clicked, m_connection, [this] { handleRemote(BACK); });
+    connect(menu,           &QPushButton::clicked, m_connection, [=] { m_connection->sendArbitraryMethod("Input.ShowOSD"); });
+    connect(context,        &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("contextmenu"); });
+    connect(info,           &QPushButton::clicked, m_connection, [=] { m_connection->sendArbitraryMethod("Input.Info"); });
+    connect(back,           &QPushButton::clicked, m_connection, [=] { m_connection->sendArbitraryMethod(BACK); });
 
-    connect(up,             &QPushButton::clicked, m_connection, [this] { handleRemote(UP); });
-    connect(down,           &QPushButton::clicked, m_connection, [this] { handleRemote(DOWN); });
-    connect(left,           &QPushButton::clicked, m_connection, [this] { handleRemote(LEFT); });
-    connect(right,          &QPushButton::clicked, m_connection, [this] { handleRemote(RIGHT); });
-    connect(enter,          &QPushButton::clicked, m_connection, [this] { handleRemote(ENTER); });
+    connect(up,             &QPushButton::clicked, m_connection, [=] { m_connection->sendArbitraryMethod("Input.Up"); });
+    connect(down,           &QPushButton::clicked, m_connection, [=] { m_connection->sendArbitraryMethod("Input.Down"); });
+    connect(left,           &QPushButton::clicked, m_connection, [=] { m_connection->sendArbitraryMethod("Input.Left"); });
+    connect(right,          &QPushButton::clicked, m_connection, [=] { m_connection->sendArbitraryMethod("Input.Right"); });
+    connect(enter,          &QPushButton::clicked, m_connection, [=] { m_connection->sendArbitraryMethod("Input.Select"); });
 
-    connect(volumeUp,       &QPushButton::clicked, m_connection, [this] { handleRemote(VOLUME_UP); });
-    connect(volumeDown,     &QPushButton::clicked, m_connection, [this] { handleRemote(VOLUME_DOWN); });
-    connect(mute,           &QShortcut::activated, m_connection, [this] { handleRemote(MUTE); });
+    connect(volumeUp,       &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("volumeup"); });
+    connect(volumeDown,     &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("volumedown"); });
+    connect(mute,           &QShortcut::activated, m_connection, [=] { m_connection->sendExecuteActionMethod("mute"); });
 }
 
 
@@ -166,113 +166,6 @@ void RemoteControl::setUpTextInput()
 }
 
 
-void RemoteControl::handleRemote(int code)
-{
-    QJsonObject params;
-    QJsonObject json {
-        {"jsonrpc", "2.0"},
-        {"id", "1"},
-        {"method", "Input.ExecuteAction"} // May get overwritten below
-    };
-
-    switch (code) {
-        case PREVIOUS:
-            params.insert("action", "skipprevious");
-            break;
-
-        case BIG_STEP_BACK:
-            params.insert("action", "bigstepback");
-            break;
-
-        case STEP_BACK:
-            params.insert("action", "stepback");
-            break;
-
-        case REWIND:
-            params.insert("action", "rewind");
-            break;
-
-        case STOP:
-            params.insert("action", "stop");
-            break;
-
-        case PLAY_PAUSE:
-            params.insert("action", "pause");
-            break;
-
-        case FAST_FORWARD:
-            params.insert("action", "fastforward");
-            break;
-
-        case STEP_FORWARD:
-            params.insert("action", "stepforward");
-            break;
-
-        case BIG_STEP_FORWARD:
-            params.insert("action", "bigstepforward");
-            break;
-
-        case NEXT:
-            params.insert("action", "skipnext");
-            break;
-
-        case MENU:
-            json.insert("method", "Input.ShowOSD");
-            break;
-
-        case CONTEXT:
-            params.insert("action", "contextmenu");
-            break;
-
-        case INFO:
-            json.insert("method", "Input.Info");
-            break;
-
-        case BACK:
-            json.insert("method", "Input.Back");
-            break;
-
-        case UP:
-            json.insert("method", "Input.Up");
-            break;
-
-        case DOWN:
-            json.insert("method", "Input.Down");
-            break;
-
-        case LEFT:
-            json.insert("method", "Input.Left");
-            break;
-
-        case RIGHT:
-            json.insert("method", "Input.Right");
-            break;
-
-        case ENTER:
-            json.insert("method", "Input.Select");
-            break;
-
-        case VOLUME_DOWN:
-            params.insert("action", "volumedown");
-            break;
-
-        case VOLUME_UP:
-            params.insert("action", "volumeup");
-            break;
-
-        case MUTE:
-            params.insert("action", "mute");
-            break;
-    }
-
-    if (!params.empty()) {
-        json.insert("params", params);
-    }
-
-    m_connection->send(QJsonDocument(json));
-}
-
-
 bool RemoteControl::getTextInputShouldBeOpen()
 {
     return textInputShouldBeOpen;
@@ -303,17 +196,7 @@ void RemoteControl::onTextMessageReceived(const QString &frame)
 
 void RemoteControl::sendText()
 {
-    QJsonObject json {
-        {"jsonrpc", "2.0"},
-        {"method", "Input.SendText"},
-        {"params", QJsonObject {
-                {"text", textInput->displayText()}
-            }
-        },
-        {"id", "1"}
-    };
-
-    m_connection->send(QJsonDocument(json));
+    m_connection->sendSendTextMethod(textInput->displayText());
 
     closeTextInput(true);
 }
@@ -345,7 +228,7 @@ void RemoteControl::closeTextInput(bool updateShouldBeOpenBool)
 void RemoteControl::cancelSendText()
 {
     // If the user has canceled we'll send Input.Back to the API to close the Kodi window and close the text input popup
-    handleRemote(BACK);
+    m_connection->sendArbitraryMethod(BACK);
 
     closeTextInput(true);
 }

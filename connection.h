@@ -11,13 +11,19 @@ class Connection : public QWebSocket
 public:
     Connection(bool debug = false);
     void setUrl(QString url);
-    void send(QJsonDocument jsonDoc);
+
+public slots:
+    void sendArbitraryMethod(QString method);
+    void sendExecuteActionMethod(QString action);
+    void sendSendTextMethod(QString text);
 
 private slots:
     void onConnected();
     void onDisconnected();
 
 private:
+    void send(QJsonDocument jsonDoc);
+
     bool       m_debug;
     QUrl       m_url;
     QByteArray jsonAsByteArray;
