@@ -26,47 +26,47 @@ void Connection::setUrl(QString url)
 
 void Connection::sendArbitraryMethod(QString method)
 {
-    send(QJsonDocument(QJsonObject {
+    send(QJsonObject {
         {"jsonrpc", "2.0"},
-        {"method",  method},
-        {"id",      "1"}
-    }));
+        {"id",      "1"},
+        {"method",  method}
+    });
 }
 
 
 void Connection::sendExecuteActionMethod(QString action)
 {
-    send(QJsonDocument(QJsonObject {
+    send(QJsonObject {
        {"jsonrpc", "2.0"},
+       {"id", "1"},
        {"method",  "Input.ExecuteAction"},
        {"params", QJsonObject {
                {"action", action}
            }
-       },
-       {"id",      "1"}
-    }));
+       }
+    });
 }
 
 
 void Connection::sendSendTextMethod(QString text)
 {
-    send(QJsonDocument(QJsonObject {
+    send(QJsonObject {
        {"jsonrpc", "2.0"},
+       {"id", "1"},
        {"method", "Input.SendText"},
        {"params", QJsonObject {
                {"text", text}
            }
-       },
-       {"id", "1"}
-    }));
+       }
+    });
 }
 
 
-void Connection::send(QJsonDocument jsonDoc)
+void Connection::send(QJsonObject object)
 {
-    if (m_debug) {qDebug() << "Sending:" << jsonDoc;}
+    if (m_debug) {qDebug() << "Sending:" << object;}
 
-    jsonAsByteArray = jsonDoc.toJson();
+    jsonAsByteArray = QJsonDocument(object).toJson();
 
     if (isValid()) {
         sendTextMessage(jsonAsByteArray);

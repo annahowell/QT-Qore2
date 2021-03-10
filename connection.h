@@ -22,7 +22,7 @@ private slots:
     void onDisconnected();
 
 private:
-    void send(QJsonDocument jsonDoc);
+    void send(QJsonObject object);
 
     bool       m_debug;
     QUrl       m_url;
