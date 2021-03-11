@@ -95,16 +95,16 @@ void RemoteControl::setShortcutsAndBindings()
     connect(stepForward,    &QShortcut::activated, m_connection, [=] { m_connection->sendExecuteActionMethod("bigstepforward"); });
     connect(next,           &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("skipnext"); });
 
-    connect(menu,           &QPushButton::clicked, m_connection, [=] { m_connection->sendArbitraryMethod("Input.ShowOSD"); });
+    connect(menu,           &QPushButton::clicked, m_connection, [=] { m_connection->sendInputDotMethod("ShowOSD"); });
     connect(context,        &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("contextmenu"); });
-    connect(info,           &QPushButton::clicked, m_connection, [=] { m_connection->sendArbitraryMethod("Input.Info"); });
-    connect(back,           &QPushButton::clicked, m_connection, [=] { m_connection->sendArbitraryMethod(BACK); });
+    connect(info,           &QPushButton::clicked, m_connection, [=] { m_connection->sendInputDotMethod("Info"); });
+    connect(back,           &QPushButton::clicked, m_connection, [=] { m_connection->sendInputDotMethod(BACK); });
 
-    connect(up,             &QPushButton::clicked, m_connection, [=] { m_connection->sendArbitraryMethod("Input.Up"); });
-    connect(down,           &QPushButton::clicked, m_connection, [=] { m_connection->sendArbitraryMethod("Input.Down"); });
-    connect(left,           &QPushButton::clicked, m_connection, [=] { m_connection->sendArbitraryMethod("Input.Left"); });
-    connect(right,          &QPushButton::clicked, m_connection, [=] { m_connection->sendArbitraryMethod("Input.Right"); });
-    connect(enter,          &QPushButton::clicked, m_connection, [=] { m_connection->sendArbitraryMethod("Input.Select"); });
+    connect(up,             &QPushButton::clicked, m_connection, [=] { m_connection->sendInputDotMethod("Up"); });
+    connect(down,           &QPushButton::clicked, m_connection, [=] { m_connection->sendInputDotMethod("Down"); });
+    connect(left,           &QPushButton::clicked, m_connection, [=] { m_connection->sendInputDotMethod("Left"); });
+    connect(right,          &QPushButton::clicked, m_connection, [=] { m_connection->sendInputDotMethod("Right"); });
+    connect(enter,          &QPushButton::clicked, m_connection, [=] { m_connection->sendInputDotMethod("Select"); });
 
     connect(volumeUp,       &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("volumeup"); });
     connect(volumeDown,     &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("volumedown"); });

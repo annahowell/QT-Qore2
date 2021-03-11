@@ -13,7 +13,7 @@ public:
     void setUrl(QString url);
 
 public slots:
-    void sendArbitraryMethod(QString method);
+    void sendInputDotMethod(QString method);
     void sendExecuteActionMethod(QString action);
     void sendSendTextMethod(QString text);
 
