@@ -34,7 +34,7 @@ Configuration includes defining the WebSocket IP/host and port for Kodi, hotkey 
 ## Compiling and Configuration
 
 1. Install QPM with `brew install QPM`
-2. From the Qore2 filer run `qpm install`
+2. From the Qore2 folder run `qpm install`
 1. Open the included .pro file in Qt Creator compiling for Qt 5.15 LTS.
 3. Compile and run
 
