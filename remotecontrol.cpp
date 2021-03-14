@@ -16,32 +16,32 @@ RemoteControl::RemoteControl(bool debug, Connection *connection)
 
 void RemoteControl::createWidgets()
 {
-    previous    = new QPushButton(style()->standardIcon(QStyle::SP_MediaSkipBackward), QString());
-    rewind      = new QPushButton(style()->standardIcon(QStyle::SP_MediaSeekBackward), QString());
-    stop        = new QPushButton(style()->standardIcon(QStyle::SP_MediaStop), QString());
-    playPause   = new QPushButton(style()->standardIcon(QStyle::SP_MediaPlay), QString());
-    fastForward = new QPushButton(style()->standardIcon(QStyle::SP_MediaSeekForward), QString());
-    next        = new QPushButton(style()->standardIcon(QStyle::SP_MediaSkipForward), QString());
+    skipPrevious = new QPushButton(style()->standardIcon(QStyle::SP_MediaSkipBackward), QString());
+    rewind       = new QPushButton(style()->standardIcon(QStyle::SP_MediaSeekBackward), QString());
+    stop         = new QPushButton(style()->standardIcon(QStyle::SP_MediaStop), QString());
+    playPause    = new QPushButton(style()->standardIcon(QStyle::SP_MediaPlay), QString());
+    fastForward  = new QPushButton(style()->standardIcon(QStyle::SP_MediaSeekForward), QString());
+    skipNext     = new QPushButton(style()->standardIcon(QStyle::SP_MediaSkipForward), QString());
 
-    menu        = new QPushButton(QChar(0x2630));
-    context     = new QPushButton(QChar(0x0043));
-    info        = new QPushButton(QChar(0x24D8));
-    back        = new QPushButton(QChar(0x21A9));
+    menu         = new QPushButton(QChar(0x2630));
+    context      = new QPushButton(QChar(0x0043));
+    info         = new QPushButton(QChar(0x24D8));
+    back         = new QPushButton(QChar(0x21A9));
 
-    up          = new QPushButton(QChar(0x2191));
-    down        = new QPushButton(QChar(0x2193));
-    left        = new QPushButton(QChar(0x2190));
-    right       = new QPushButton(QChar(0x2192));
-    enter       = new QPushButton(QString::fromUtf8("OK"));
+    up           = new QPushButton(QChar(0x2191));
+    down         = new QPushButton(QChar(0x2193));
+    left         = new QPushButton(QChar(0x2190));
+    right        = new QPushButton(QChar(0x2192));
+    enter        = new QPushButton(QString::fromUtf8("OK"));
 
-    volumeUp    = new QPushButton(QChar(0x002B));
-    volumeLogo  = new QPushButton(style()->standardIcon(QStyle::SP_MediaVolume), QString());
-    volumeDown  = new QPushButton(QChar(0x2212));
+    volumeUp     = new QPushButton(QChar(0x002B));
+    volumeLogo   = new QPushButton(style()->standardIcon(QStyle::SP_MediaVolume), QString());
+    volumeDown   = new QPushButton(QChar(0x2212));
 
-    buttons << previous    << rewind     << stop       << next  << playPause
-            << fastForward << menu       << context    << info  << back
-            << up          << down       << left       << right << enter
-            << volumeUp    << volumeLogo << volumeDown;
+    buttons << skipPrevious << rewind     << stop       << skipNext  << playPause
+            << fastForward  << menu       << context    << info      << back
+            << up           << down       << left       << right     << enter
+            << volumeUp     << volumeLogo << volumeDown;
 
     for(auto& button : buttons)
     {
@@ -62,38 +62,38 @@ void RemoteControl::setShortcutsAndBindings()
     QShortcut *stepForward     = new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Right), this);
     QShortcut *mute            = new QShortcut(Qt::Key_Backslash, this);
 
-    previous->setShortcut   (Qt::Key_Minus);
-    rewind->setShortcut     (Qt::Key_Comma);
-    stop->setShortcut       (Qt::Key_X);
-    playPause->setShortcut  (Qt::Key_Space);
-    fastForward->setShortcut(Qt::Key_Period);
-    next->setShortcut       (Qt::Key_Equal);
+    skipPrevious->setShortcut(Qt::Key_Minus);
+    rewind->setShortcut      (Qt::Key_Comma);
+    stop->setShortcut        (Qt::Key_X);
+    playPause->setShortcut   (Qt::Key_Space);
+    fastForward->setShortcut (Qt::Key_Period);
+    skipNext->setShortcut    (Qt::Key_Equal);
 
-    menu->setShortcut       (Qt::Key_M);
-    context->setShortcut    (Qt::Key_C);
-    info->setShortcut       (Qt::Key_I);
-    back->setShortcut       (Qt::Key_Backspace);
+    menu->setShortcut        (Qt::Key_M);
+    context->setShortcut     (Qt::Key_C);
+    info->setShortcut        (Qt::Key_I);
+    back->setShortcut        (Qt::Key_Backspace);
 
-    up->setShortcut         (Qt::Key_Up);
-    down->setShortcut       (Qt::Key_Down);
-    left->setShortcut       (Qt::Key_Left);
-    right->setShortcut      (Qt::Key_Right);
-    enter->setShortcut      (Qt::Key_Return);
+    up->setShortcut          (Qt::Key_Up);
+    down->setShortcut        (Qt::Key_Down);
+    left->setShortcut        (Qt::Key_Left);
+    right->setShortcut       (Qt::Key_Right);
+    enter->setShortcut       (Qt::Key_Return);
 
-    volumeUp->setShortcut   (Qt::Key_BracketRight);
-    volumeDown->setShortcut (Qt::Key_BracketLeft);
+    volumeUp->setShortcut    (Qt::Key_BracketRight);
+    volumeDown->setShortcut  (Qt::Key_BracketLeft);
 
     // Set signal mapping for the buttons
-    connect(previous,       &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("skipprevious"); });
+    connect(skipPrevious,   &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("skipprevious"); });
     connect(bigStepBack,    &QShortcut::activated, m_connection, [=] { m_connection->sendExecuteActionMethod("bigstepback"); });
     connect(stepBack,       &QShortcut::activated, m_connection, [=] { m_connection->sendExecuteActionMethod("stepback"); });
     connect(rewind,         &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("rewind"); });
     connect(stop,           &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("stop"); });
     connect(playPause,      &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("pause"); });
     connect(fastForward,    &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("fastforward"); });
-    connect(bigStepForward, &QShortcut::activated, m_connection, [=] { m_connection->sendExecuteActionMethod("stepforward"); });
-    connect(stepForward,    &QShortcut::activated, m_connection, [=] { m_connection->sendExecuteActionMethod("bigstepforward"); });
-    connect(next,           &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("skipnext"); });
+    connect(stepForward,    &QShortcut::activated, m_connection, [=] { m_connection->sendExecuteActionMethod("stepforward"); });
+    connect(bigStepForward, &QShortcut::activated, m_connection, [=] { m_connection->sendExecuteActionMethod("bigstepforward"); });
+    connect(skipNext,       &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("skipnext"); });
 
     connect(menu,           &QPushButton::clicked, m_connection, [=] { m_connection->sendInputDotMethod("ShowOSD"); });
     connect(context,        &QPushButton::clicked, m_connection, [=] { m_connection->sendExecuteActionMethod("contextmenu"); });
@@ -124,27 +124,27 @@ void RemoteControl::setUpLayout()
 
     grid->setMargin(8);
 
-    grid->addWidget(menu,        1, 1,  Qt::AlignBottom);
-    grid->addWidget(context,     1, 2,  Qt::AlignBottom);
-    grid->addWidget(info,        1, 3,  Qt::AlignBottom);
-    grid->addWidget(back,        1, 4,  Qt::AlignBottom);
+    grid->addWidget(menu,         1, 1,  Qt::AlignBottom);
+    grid->addWidget(context,      1, 2,  Qt::AlignBottom);
+    grid->addWidget(info,         1, 3,  Qt::AlignBottom);
+    grid->addWidget(back,         1, 4,  Qt::AlignBottom);
 
-    grid->addWidget(previous,    2, 0,  Qt::AlignTop);
-    grid->addWidget(rewind,      2, 1,  Qt::AlignTop);
-    grid->addWidget(stop,        2, 2,  Qt::AlignTop);
-    grid->addWidget(playPause,   2, 3,  Qt::AlignTop);
-    grid->addWidget(fastForward, 2, 4,  Qt::AlignTop);
-    grid->addWidget(next,        2, 5,  Qt::AlignTop);
+    grid->addWidget(skipPrevious, 2, 0,  Qt::AlignTop);
+    grid->addWidget(rewind,       2, 1,  Qt::AlignTop);
+    grid->addWidget(stop,         2, 2,  Qt::AlignTop);
+    grid->addWidget(playPause,    2, 3,  Qt::AlignTop);
+    grid->addWidget(fastForward,  2, 4,  Qt::AlignTop);
+    grid->addWidget(skipNext,     2, 5,  Qt::AlignTop);
 
-    grid->addWidget(up,          0, 8,  Qt::AlignBottom);
-    grid->addWidget(down,        2, 8,  Qt::AlignTop);
-    grid->addWidget(left,        1, 7,  Qt::AlignRight);
-    grid->addWidget(right,       1, 9,  Qt::AlignLeft);
-    grid->addWidget(enter,       1, 8,  Qt::AlignCenter);
+    grid->addWidget(up,           0, 8,  Qt::AlignBottom);
+    grid->addWidget(down,         2, 8,  Qt::AlignTop);
+    grid->addWidget(left,         1, 7,  Qt::AlignRight);
+    grid->addWidget(right,        1, 9,  Qt::AlignLeft);
+    grid->addWidget(enter,        1, 8,  Qt::AlignCenter);
 
-    grid->addWidget(volumeUp,    0, 11, Qt::AlignBottom);
-    grid->addWidget(volumeLogo,  1, 11, Qt::AlignLeft);
-    grid->addWidget(volumeDown,  2, 11, Qt::AlignTop);
+    grid->addWidget(volumeUp,     0, 11, Qt::AlignBottom);
+    grid->addWidget(volumeLogo,   1, 11, Qt::AlignLeft);
+    grid->addWidget(volumeDown,   2, 11, Qt::AlignTop);
 
     setLayout(grid);
 }

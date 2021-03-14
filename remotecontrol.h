@@ -24,10 +24,10 @@ private:
     QDialog             *textInputDialog;
     QLineEdit           *textInput;
     QPushButton         *cancelButton, *quitButton;
-    QPushButton         *previous, *rewind,   *stop,       *playPause, *fastForward, *next,
-                        *menu,     *context,  *info,       *back,
-                        *up,       *down,     *left,       *right,
-                        *enter,    *volumeUp, *volumeLogo, *volumeDown;
+    QPushButton         *skipPrevious, *rewind,   *stop,       *playPause, *fastForward, *skipNext,
+                        *menu,         *context,  *info,       *back,
+                        *up,           *down,     *left,       *right,
+                        *enter,        *volumeUp, *volumeLogo, *volumeDown;
 
     void createWidgets();
     void setShortcutsAndBindings();
