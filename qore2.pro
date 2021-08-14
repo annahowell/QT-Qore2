@@ -12,7 +12,7 @@ QT       += network
 QT       += widgets
 QT       += websockets
 
-CONFIG   += C++11
+CONFIG   += C++11 app_bundle
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
