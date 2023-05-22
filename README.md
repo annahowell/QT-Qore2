@@ -5,7 +5,7 @@ Qore2 supports up to 3 Kodi instances, menu navigation, volume control, info and
 
 Configuration includes defining the WebSocket IP/host and port for each Kodi instance, and a global hotkey binding and dark/light icon theme. At present I have no plans to support customisable Kodi input bindings, sorry.
 
-Download the latest release [here](releases/Qore2-v1_1.zip).
+Download the latest release [here](https://github.com/annahowell/QT-Qore2/raw/master/releases/Qore2-v1_1.zip).
 
 ## Shortcuts
 
