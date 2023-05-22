@@ -10,12 +10,12 @@ class Connection : public QWebSocket
 
 public:
     Connection(bool debug = false);
-    void setUrl(QString url);
 
 public slots:
     void sendInputDotMethod(QString method);
     void sendExecuteActionMethod(QString action);
     void sendSendTextMethod(QString text);
+    void setUrl(QString ip, QString port);
 
 private slots:
     void onConnected();
@@ -23,10 +23,9 @@ private slots:
 
 private:
     void send(QJsonObject object);
-
-    bool       m_debug;
     QUrl       m_url;
     QByteArray jsonAsByteArray;
+    bool       m_debug;
 };
 
 #endif // CONNECTION_H

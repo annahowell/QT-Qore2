@@ -3,38 +3,56 @@
 
 #include <QtWidgets>
 #include <QHotkey>
-#include "connection.h"
+#include "kodisettings.h"
 
-#define BLACK_ICON ":/icons/tray-icon-black.svg"
-#define WHITE_ICON ":/icons/tray-icon-white.svg"
+#define BLACK_ICON         ":/icons/tray-icon-black.svg"
+#define WHITE_ICON         ":/icons/tray-icon-white.svg"
 
-class Settings : public QWidget
+class Settings : public QDialog
 {
     Q_OBJECT
 
 public:
-    Settings(bool debug, Connection *connection, QHotkey *hotkey, QSystemTrayIcon *trayIcon);
+    Settings(bool debug, QHotkey *hotkey);
+    void toggleIconTheme();
+    bool getDarkTheme();
+    void updateTabIndexFromDisk();
+    void updateTabLabelByIndex(int tabIndex);
+    QString getCurrentIP();
+    QString getCurrentPort();
+    QString getNicknameByIndex(int index);
+
+public slots:
+    void saveTabIndexToDisk();
+    void updateCurrentTabLabel();
+
+signals:
+    void tabIndexChangedSignal(int currentIndex);
+    void settingsCloseEventSignal(QString ip, QString port);
+    void setUseLightThemeSignal(bool useLightTheme);
 
 private slots:
-    void toggleMenuIconColor();
-    void resetSettings();
-    void saveSettings();
+    void showSetDefaultsConfirmation();
+    void saveSettingsToDisk();
+    void emitTabIndexChangedSignal();
 
 private:
-    bool              darkTheme, m_debug;
-    Connection       *m_connection;
-    QLabel           *ipLabel, *portLabel, *hotKeyLabel;
-    QLineEdit        *ipEdit, *portEdit;
-    QKeySequenceEdit *hotKeyEdit;
-    QSettings        *settings;
-    QPushButton      *toggleButton, *saveButton, *resetButton;
-    QHotkey          *m_hotkey;
-    QSystemTrayIcon  *m_trayIcon;
+    const int KODI_COUNT = 3;
 
-    void setDefaults(bool doReset);
-    void setupFromDisk();
+    bool             darkTheme, m_debug;
+    QKeySequenceEdit *hotKeyEdit;
+    QLineEdit        *nicknameEdit;
+    QSettings        *settings;
+    QHotkey          *m_hotkey;
+    KodiSettings     *kodiSettings[3];
+    QTabWidget       *tabWidget;
+
+    void saveDefaultsToDisk(bool requestedByUser);
+    void populateWidgetsWithValuesFromDisk();
     void createWidgets();
-    QString getUrl();
+
+protected:
+    void closeEvent (QCloseEvent *event);
 };
 
 #endif // SETTINGS_H

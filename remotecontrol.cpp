@@ -3,6 +3,10 @@
 RemoteControl::RemoteControl(bool debug, Connection *connection)
     : m_debug(debug), m_connection(connection)
 {
+    if (m_debug) {
+        qDebug() << "Qore2: Running RemoteControl:RemoteControl()";
+    }
+
     textInputShouldBeOpen = false;
 
     createWidgets();
@@ -16,27 +20,31 @@ RemoteControl::RemoteControl(bool debug, Connection *connection)
 
 void RemoteControl::createWidgets()
 {
-    skipPrevious = new QPushButton(style()->standardIcon(QStyle::SP_MediaSkipBackward), QString());
-    rewind       = new QPushButton(style()->standardIcon(QStyle::SP_MediaSeekBackward), QString());
-    stop         = new QPushButton(style()->standardIcon(QStyle::SP_MediaStop), QString());
-    playPause    = new QPushButton(style()->standardIcon(QStyle::SP_MediaPlay), QString());
-    fastForward  = new QPushButton(style()->standardIcon(QStyle::SP_MediaSeekForward), QString());
-    skipNext     = new QPushButton(style()->standardIcon(QStyle::SP_MediaSkipForward), QString());
+    if (m_debug) {
+        qDebug() << "Qore2: Running RemoteControl:createWidgets()";
+    }
 
-    menu         = new QPushButton(QChar(0x2630));
-    context      = new QPushButton(QChar(0x0043));
-    info         = new QPushButton(QChar(0x24D8));
-    back         = new QPushButton(QChar(0x21A9));
+    skipPrevious = new QPushButton(style()->standardIcon(QStyle::SP_MediaSkipBackward), QString(), this);
+    rewind       = new QPushButton(style()->standardIcon(QStyle::SP_MediaSeekBackward), QString(), this);
+    stop         = new QPushButton(style()->standardIcon(QStyle::SP_MediaStop), QString(), this);
+    playPause    = new QPushButton(style()->standardIcon(QStyle::SP_MediaPlay), QString(), this);
+    fastForward  = new QPushButton(style()->standardIcon(QStyle::SP_MediaSeekForward), QString(), this);
+    skipNext     = new QPushButton(style()->standardIcon(QStyle::SP_MediaSkipForward), QString(), this);
 
-    up           = new QPushButton(QChar(0x2191));
-    down         = new QPushButton(QChar(0x2193));
-    left         = new QPushButton(QChar(0x2190));
-    right        = new QPushButton(QChar(0x2192));
-    enter        = new QPushButton(QString::fromUtf8("OK"));
+    menu         = new QPushButton(QChar(0x2630), this);
+    context      = new QPushButton(QChar(0x0043), this);
+    info         = new QPushButton(QChar(0x24D8), this);
+    back         = new QPushButton(QChar(0x21A9), this);
 
-    volumeUp     = new QPushButton(QChar(0x002B));
-    volumeLogo   = new QPushButton(style()->standardIcon(QStyle::SP_MediaVolume), QString());
-    volumeDown   = new QPushButton(QChar(0x2212));
+    up           = new QPushButton(QChar(0x2191), this);
+    down         = new QPushButton(QChar(0x2193), this);
+    left         = new QPushButton(QChar(0x2190), this);
+    right        = new QPushButton(QChar(0x2192), this);
+    enter        = new QPushButton(QString::fromUtf8("OK"), this);
+
+    volumeUp     = new QPushButton(QChar(0x002B), this);
+    volumeLogo   = new QPushButton(style()->standardIcon(QStyle::SP_MediaVolume), QString(), this);
+    volumeDown   = new QPushButton(QChar(0x2212), this);
 
     buttons << skipPrevious << rewind     << stop       << skipNext  << playPause
             << fastForward  << menu       << context    << info      << back
@@ -45,7 +53,7 @@ void RemoteControl::createWidgets()
 
     for(auto& button : buttons)
     {
-      button->setFixedSize(QSize(42, 40));
+      button->setFixedSize(QSize(34, 40));
       button->setFlat(false);
     }
 
@@ -56,10 +64,14 @@ void RemoteControl::createWidgets()
 
 void RemoteControl::setShortcutsAndBindings()
 {
-    QShortcut *bigStepBack     = new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Down), this);
-    QShortcut *bigStepForward  = new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Up), this);
-    QShortcut *stepBack        = new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Left), this);
-    QShortcut *stepForward     = new QShortcut(QKeySequence(Qt::ShiftModifier + Qt::Key_Right), this);
+    if (m_debug) {
+        qDebug() << "Qore2: Running RemoteControl:setShortcutsAndBindings()";
+    }
+
+    QShortcut *bigStepBack     = new QShortcut(QKeySequence(Qt::ShiftModifier | Qt::Key_Down), this);
+    QShortcut *bigStepForward  = new QShortcut(QKeySequence(Qt::ShiftModifier | Qt::Key_Up), this);
+    QShortcut *stepBack        = new QShortcut(QKeySequence(Qt::ShiftModifier | Qt::Key_Left), this);
+    QShortcut *stepForward     = new QShortcut(QKeySequence(Qt::ShiftModifier | Qt::Key_Right), this);
     QShortcut *mute            = new QShortcut(Qt::Key_Backslash, this);
 
     skipPrevious->setShortcut(Qt::Key_Minus);
@@ -114,7 +126,11 @@ void RemoteControl::setShortcutsAndBindings()
 
 void RemoteControl::setUpLayout()
 {
-    QGridLayout *grid = new QGridLayout();
+    if (m_debug) {
+        qDebug() << "Qore2: Running RemoteControl:setUpLayout()";
+    }
+
+    QGridLayout *grid = new QGridLayout(this);
 
     grid->setColumnMinimumWidth(6,  10);
     grid->setColumnMinimumWidth(10, 20);
@@ -122,7 +138,7 @@ void RemoteControl::setUpLayout()
     grid->setHorizontalSpacing(4);
     grid->setVerticalSpacing(8);
 
-    grid->setMargin(8);
+    grid->setContentsMargins(8, 8, 8, 8);
 
     grid->addWidget(menu,         1, 1,  Qt::AlignBottom);
     grid->addWidget(context,      1, 2,  Qt::AlignBottom);
@@ -152,11 +168,15 @@ void RemoteControl::setUpLayout()
 
 void RemoteControl::setUpTextInput()
 {
+    if (m_debug) {
+        qDebug() << "Qore2: Running RemoteControl:setUpTextInput()";
+    }
+
     textInputDialog = new QDialog(this, Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
     textInputDialog->setFixedSize(400, 60);
 
     QVBoxLayout *textInputLayout = new QVBoxLayout();
-    textInput = new QLineEdit();
+    textInput = new QLineEdit(this);
     textInputLayout->addWidget(textInput);
 
     textInputDialog->setLayout(textInputLayout);
@@ -168,13 +188,19 @@ void RemoteControl::setUpTextInput()
 
 bool RemoteControl::getTextInputShouldBeOpen()
 {
+    if (m_debug) {
+        qDebug() << "Qore2: Running RemoteControl:getTextInputShouldBeOpen()";
+    }
+
     return textInputShouldBeOpen;
 }
 
 
 void RemoteControl::onTextMessageReceived(const QString &frame)
 {
-    if (m_debug) {qDebug() << "Received message: " << frame;}
+    if (m_debug) {
+        qDebug() << "Qore2: Running RemoteControl:onTextMessageReceived(frame) with frame " << frame;
+    }
 
     QJsonObject jsonObject = QJsonDocument::fromJson(frame.toUtf8()).object();
     QString method = jsonObject.value("method").toString();
@@ -186,7 +212,9 @@ void RemoteControl::onTextMessageReceived(const QString &frame)
         // The string we're after is 'value', which is inside 'data', which in turn is inside 'params'
         QString currentText = jsonObject.value("params").toObject().value("data").toObject().value("value").toString();
 
-        if (m_debug) {qDebug() << "Received text input request to amend:" << currentText;}
+        if (m_debug) {
+            qDebug() << "Qore2: Received text input request to amend:" << currentText;
+        }
 
         textInput->setText(currentText);
         openTextInput(true);
@@ -196,6 +224,10 @@ void RemoteControl::onTextMessageReceived(const QString &frame)
 
 void RemoteControl::sendText()
 {
+    if (m_debug) {
+        qDebug() << "Qore2: Running RemoteControl:sendText()";
+    }
+
     m_connection->sendSendTextMethod(textInput->displayText());
 
     closeTextInput(true);
@@ -204,6 +236,10 @@ void RemoteControl::sendText()
 
 void RemoteControl::openTextInput(bool updateShouldBeOpenBool)
 {
+    if (m_debug) {
+        qDebug() << "Qore2: Running RemoteControl:updateShouldBeOpenBool(updateShouldBeOpenBool) with updateShouldBeOpenBool " << updateShouldBeOpenBool;
+    }
+
     textInputShouldBeOpen = updateShouldBeOpenBool ? true : textInputShouldBeOpen;
 
     textInputDialog->show();
@@ -216,6 +252,10 @@ void RemoteControl::openTextInput(bool updateShouldBeOpenBool)
 
 void RemoteControl::closeTextInput(bool updateShouldBeOpenBool)
 {
+    if (m_debug) {
+        qDebug() << "Qore2: Running RemoteControl:closeTextInput(updateShouldBeOpenBool) with updateShouldBeOpenBool " << updateShouldBeOpenBool;
+    }
+
     textInputDialog->hide();
 
     if (updateShouldBeOpenBool) {
@@ -227,6 +267,10 @@ void RemoteControl::closeTextInput(bool updateShouldBeOpenBool)
 
 void RemoteControl::cancelSendText()
 {
+    if (m_debug) {
+        qDebug() << "Qore2: Running RemoteControl:cancelSendText()";
+    }
+
     // If the user has canceled we'll send Input.Back to the API to close the Kodi window and close the text input popup
     m_connection->sendInputDotMethod("Back");
 

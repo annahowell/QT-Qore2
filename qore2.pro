@@ -14,7 +14,7 @@ QT       += websockets
 
 CONFIG   += C++11 app_bundle
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 5): QT += widgets
 
 TARGET    = Qore2
 TEMPLATE  = app
@@ -24,11 +24,13 @@ ICON      = Qore2.icns
 
 HEADERS  += mainwindow.h \
             connection.h \
+            kodisettings.h \
             remotecontrol.h \
             settings.h \
             trayapp.h
 
 SOURCES  += main.cpp\
+            kodisettings.cpp \
             mainwindow.cpp \
             connection.cpp \
             remotecontrol.cpp \
@@ -43,3 +45,6 @@ QMAKE_INFO_PLIST = Info.plist
 DISTFILES += \
     README.md \
     Info.plist
+
+FORMS += \
+    dialog.ui

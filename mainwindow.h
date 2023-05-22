@@ -5,7 +5,6 @@
 #include <QGridLayout>
 #include <QCloseEvent>
 #include <QHotkey>
-#include "settings.h"
 #include "connection.h"
 #include "remotecontrol.h"
 
@@ -14,8 +13,11 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(bool debug, RemoteControl *remoteControl, Settings *settings, QWidget *quit);
-    void setTab(int index);
+    MainWindow(bool debug, RemoteControl *remoteControl);
+    void addTabWithText(QString text);
+
+signals:
+     void tabIndexChangedSignal(int currentIndex);
 
 protected:
     void closeEvent(QCloseEvent *event) override;
@@ -23,9 +25,10 @@ protected:
 private:
     bool           m_debug;
     RemoteControl *m_remoteControl;
-    Settings      *m_settings;
-    QWidget       *m_quit;
-    QTabWidget    *tabs;
+    QTabWidget    *tabWidget;
+
+private slots:
+    void saveTabIndexToDisk();
 };
 
 #endif // MAINWINDOW_H
